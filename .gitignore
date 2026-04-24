@@ -58,3 +58,6 @@ docs/
 *.md
 *plan*
 .claude/
+
+*.sql
+*.ps1
