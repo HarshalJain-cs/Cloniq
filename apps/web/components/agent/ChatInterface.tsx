@@ -71,15 +71,31 @@ export default function ChatInterface({
 
       setTradeResult(result);
 
-      // Add success message to chat
+      // Add success message to chat based on agent type
+      let successContent = "";
+      if (agentName === 'yield-aggregator') {
+        successContent = `✅ SUCCESS! I've invested $${depositAmount} USDC for you!\n\n` +
+          `Protocol: ${result.protocol}\n` +
+          `Transaction: ${result.transactions?.deposit || result.transactions?.buy}\n` +
+          `View on explorer: ${result.explorer}\n\n` +
+          `Your funds are now earning ~${result.estimatedAPY} APY!`;
+      } else if (agentName === 'options-trader') {
+        successContent = `✅ SUCCESS! I've bought options for $${depositAmount} USDC!\n\n` +
+          `Protocol: ${result.protocol}\n` +
+          `Asset: ${result.asset} ${result.optionType}\n` +
+          `Strike: ${result.strikePrice} | Expiry: ${result.expiry}\n` +
+          `Contracts: ${result.contracts}\n` +
+          `Transaction: ${result.transactions?.buy}\n` +
+          `View on explorer: ${result.explorer}\n\n` +
+          `Potential Profit: ${result.estimatedProfitPotential}`;
+      } else {
+        successContent = `✅ SUCCESS! Transaction completed for $${depositAmount} USDC!`;
+      }
+
       const successMsg = {
         id: Date.now().toString(),
         role: "assistant",
-        content: `✅ SUCCESS! I've invested $${depositAmount} USDC for you!\n\n` +
-          `Protocol: ${result.protocol}\n` +
-          `Transaction: ${result.transactions?.deposit}\n` +
-          `View on explorer: ${result.explorer}\n\n` +
-          `Your funds are now earning ~${result.estimatedAPY} APY!`,
+        content: successContent,
       };
       setMessages(prev => [...prev, successMsg]);
 

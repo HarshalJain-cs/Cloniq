@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Building2, CheckCircle, Loader2 } from "lucide-react";
+import Link from "next/link";
 
 export default function BusinessRegisterPage() {
   const router = useRouter();
@@ -113,19 +114,31 @@ export default function BusinessRegisterPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 pt-32 pb-20 px-6 flex items-center justify-center">
         <Card className="glass shadow-premium border-black/5 max-w-md w-full">
-          <CardContent className="p-8 text-center">
-            <Building2 className="w-16 h-16 mx-auto mb-4 text-primary" />
-            <h2 className="font-bold text-2xl mb-2">Connect Wallet</h2>
-            <p className="text-foreground/60 mb-6">Connect your wallet to register your business on Cloniq</p>
-            <ConnectButton
-              client={client}
-              chain={baseSepolia}
-              wallets={[
-                inAppWallet({ auth: { options: ["google", "email"] }, smartAccount: { chain: baseSepolia, sponsorGas: true } }),
-                createWallet("io.metamask"),
-                createWallet("com.coinbase.wallet"),
-              ]}
-            />
+          <CardContent className="p-8">
+            <div className="text-center mb-6">
+              <Building2 className="w-16 h-16 mx-auto mb-4 text-primary" />
+              <h2 className="font-bold text-2xl mb-2">Business Account</h2>
+              <p className="text-foreground/60">Connect your wallet to get started</p>
+            </div>
+            <div className="text-center mb-6">
+              <ConnectButton
+                client={client}
+                chain={baseSepolia}
+                wallets={[
+                  inAppWallet({ auth: { options: ["google", "email"] }, smartAccount: { chain: baseSepolia, sponsorGas: true } }),
+                  createWallet("io.metamask"),
+                  createWallet("com.coinbase.wallet"),
+                ]}
+              />
+            </div>
+            <div className="pt-6 border-t border-black/5 text-center">
+              <p className="text-sm text-foreground/60 mb-3">Already have a business account?</p>
+              <Link href="/business/login">
+                <Button variant="outline" className="w-full crisp-border">
+                  Login to Existing Business
+                </Button>
+              </Link>
+            </div>
           </CardContent>
         </Card>
       </div>
