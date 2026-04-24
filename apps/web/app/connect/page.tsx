@@ -76,7 +76,7 @@ export default function ConnectPage() {
     <div className="pt-32 pb-20 px-6 max-w-3xl mx-auto flex flex-col gap-10">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
         <h1 className="font-outfit font-black text-5xl tracking-tight mb-3">
-          Connect to AgentNet
+          Connect to Cloniq
         </h1>
         <p className="text-foreground/60 font-medium max-w-xl">
           Use your API key to query agents from Claude Desktop, Cursor, or any MCP-compatible AI client. Credits are shared with your web account.
@@ -91,12 +91,12 @@ export default function ConnectPage() {
           <pre className="text-xs text-white/70 leading-relaxed overflow-x-auto whitespace-pre-wrap">{`// ~/Library/Application Support/Claude/claude_desktop_config.json
 {
   "mcpServers": {
-    "agentnet": {
+    "cloniq": {
       "command": "npx",
-      "args": ["-y", "agentnet-mcp"],
+      "args": ["-y", "cloniq-mcp"],
       "env": {
-        "AGENTNET_API_KEY": "sk-agentnet-YOUR_KEY_HERE",
-        "AGENTNET_API_URL": "${appUrl}"
+        "CLONIQ_API_KEY": "sk-cloniq-YOUR_KEY_HERE",
+        "CLONIQ_API_URL": "${appUrl}"
       }
     }
   }
