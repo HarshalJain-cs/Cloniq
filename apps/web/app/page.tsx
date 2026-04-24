@@ -1,7 +1,7 @@
 import Hero from "@/components/home/Hero";
 import HowItWorks from "@/components/home/HowItWorks";
 import Features from "@/components/home/Features";
-import WhyAgentNet from "@/components/home/WhyAgentNet";
+import WhyCloniq from "@/components/home/WhyCloniq";
 import AgentGrid from "@/components/home/AgentGrid";
 
 export default function Home() {
@@ -10,7 +10,7 @@ export default function Home() {
       <Hero />
       <HowItWorks />
       <Features />
-      <WhyAgentNet />
+      <WhyCloniq />
       <AgentGrid />
     </div>
   );

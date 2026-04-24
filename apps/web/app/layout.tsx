@@ -28,7 +28,7 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "AgentNet | Immersive AI Marketplace",
+  title: "Cloniq | Immersive AI Marketplace",
   description: "Browse, create, and interact with high-performance AI agents.",
 };
 
