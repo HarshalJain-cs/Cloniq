@@ -20,7 +20,11 @@ export default function Header() {
   const pathname = usePathname();
   const account = useActiveAccount();
   const NAV_LINKS = account
-    ? [...BASE_NAV, { href: "/profile", label: "Profile" }]
+    ? [
+        ...BASE_NAV,
+        { href: "/dashboard", label: "Dashboard" },
+        { href: "/profile", label: "Profile" }
+      ]
     : BASE_NAV;
 
   const [credits, setCredits] = useState<number | null>(null);
@@ -58,7 +62,7 @@ export default function Header() {
       <div className="mx-auto max-w-7xl flex items-center justify-between">
         {/* Branding */}
         <Link href="/" className="flex flex-col group">
-          <span className="font-logo text-xl tracking-tighter transition-colors duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:text-accent">agentnet</span>
+          <span className="font-logo text-xl tracking-tighter transition-colors duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:text-accent">cloniq</span>
           <span className="font-mono text-[7px] opacity-20 uppercase tracking-[0.4em] -mt-1">Reality // Design</span>
         </Link>
 
@@ -107,11 +111,11 @@ export default function Header() {
               label: "CONNECT_ID",
             }}
             connectModal={{
-              title: "Connect to AgentNet",
+              title: "Connect to Cloniq",
               titleIcon: "",
               showThirdwebBranding: false,
               welcomeScreen: {
-                title: "AgentNet",
+                title: "Cloniq",
                 subtitle: "The global standard for autonomous intelligence.",
               },
             }}
