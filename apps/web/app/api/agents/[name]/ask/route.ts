@@ -46,7 +46,7 @@ export async function POST(
     }
 
     // ── API Key Credit Gate (MCP / external integrations) ────────────────────
-    const apiKey = request.headers.get("X-AgentNet-Key");
+    const apiKey = request.headers.get("X-Cloniq-Key");
     if (apiKey) {
       const user = await verifyApiKey(apiKey);
       if (!user) {
@@ -58,7 +58,7 @@ export async function POST(
         if (credits < price) {
           return NextResponse.json(
             {
-              error: `Insufficient credits. Need ${price} USDC, have ${credits.toFixed(4)}. Top up at agentnet.xyz/profile`,
+              error: `Insufficient credits. Need ${price} USDC, have ${credits.toFixed(4)}. Top up at cloniq.app/profile`,
             },
             { status: 402 }
           );
