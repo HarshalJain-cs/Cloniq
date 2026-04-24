@@ -2,7 +2,7 @@ import { createServiceRoleClient } from "@/lib/supabase";
 
 export function generateKey(): string {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  let result = "sk-agentnet-";
+  let result = "sk-cloniq-";
   for (let i = 0; i < 32; i++) {
     result += chars.charAt(Math.floor(Math.random() * chars.length));
   }
@@ -12,7 +12,7 @@ export function generateKey(): string {
 export async function verifyApiKey(
   key: string
 ): Promise<{ walletAddress: string } | null> {
-  if (!key?.startsWith("sk-agentnet-")) return null;
+  if (!key?.startsWith("sk-cloniq-")) return null;
   const supabase = createServiceRoleClient();
   const { data, error } = await supabase
     .from("api_keys")
