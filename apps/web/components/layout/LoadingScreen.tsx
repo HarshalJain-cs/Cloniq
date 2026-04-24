@@ -9,7 +9,7 @@ export default function LoadingScreen() {
 
   useEffect(() => {
     // Only show once per session
-    if (sessionStorage.getItem("agentnet_loaded")) {
+    if (sessionStorage.getItem("cloniq_loaded")) {
       setVisible(false);
       return;
     }
@@ -20,7 +20,7 @@ export default function LoadingScreen() {
           clearInterval(interval);
           setTimeout(() => {
             setVisible(false);
-            sessionStorage.setItem("agentnet_loaded", "1");
+            sessionStorage.setItem("cloniq_loaded", "1");
           }, 400);
           return 100;
         }
@@ -53,7 +53,7 @@ export default function LoadingScreen() {
               className="flex flex-col items-center"
             >
               <span className="font-logo text-7xl md:text-8xl tracking-tighter text-black leading-none">
-                agentnet
+                cloniq
               </span>
               <span className="font-mono text-[9px] opacity-20 uppercase tracking-[0.5em] mt-1">
                 Reality // Design
