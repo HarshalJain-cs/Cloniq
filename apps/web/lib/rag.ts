@@ -1,6 +1,6 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { getEmbedding } from "./embeddings";
-import { getChatCompletion, getChatCompletionStream } from "./groq";
+import { getLLMCompletion, getLLMCompletionStream, type LLMProvider } from "./llm-provider";
 import { generateBasicPersonalityPrompt, type PersonalityProfile, generatePersonalityPrompt } from "./personality-extractor";
 
 let supabaseClient: SupabaseClient | null = null;
@@ -33,7 +33,8 @@ export async function runAgentQuery(
     agentDescription: string,
     question: string,
     personality?: PersonalityProfile | null,
-    llmModel: string = "llama-3.3-70b-versatile"
+    llmProvider: LLMProvider = "groq",
+    llmModel?: string
 ): Promise<string> {
     const supabase = getSupabase();
     const embedding = await getEmbedding(question);
@@ -54,7 +55,7 @@ export async function runAgentQuery(
         ? generatePersonalityPrompt(agentName, agentDescription, personality, context)
         : generateBasicPersonalityPrompt(agentName, agentDescription, context);
 
-    return getChatCompletion(systemPrompt, question, llmModel);
+    return getLLMCompletion(systemPrompt, question, llmProvider, llmModel);
 }
 
 export async function streamAgentQuery(
@@ -63,7 +64,8 @@ export async function streamAgentQuery(
     agentDescription: string,
     question: string,
     personality?: PersonalityProfile | null,
-    llmModel: string = "llama-3.3-70b-versatile"
+    llmProvider: LLMProvider = "groq",
+    llmModel?: string
 ): Promise<ReadableStream<string>> {
     const supabase = getSupabase();
     const embedding = await getEmbedding(question);
@@ -84,7 +86,7 @@ export async function streamAgentQuery(
         ? generatePersonalityPrompt(agentName, agentDescription, personality, context)
         : generateBasicPersonalityPrompt(agentName, agentDescription, context);
 
-    return getChatCompletionStream(systemPrompt, question, llmModel);
+    return getLLMCompletionStream(systemPrompt, question, llmProvider, llmModel);
 }
 
 export async function seedAgentMemory(

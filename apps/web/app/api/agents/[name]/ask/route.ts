@@ -107,7 +107,8 @@ export async function POST(
       agent.description,
       body.question.trim(),
       agent.personality, // Use extracted personality for stronger responses
-      agent.llm_model || "llama-3.3-70b-versatile" // Use agent's selected model
+      agent.llm_provider || "groq", // Use agent's selected provider
+      agent.llm_model // Use agent's selected model
     );
     const responseTime = Date.now() - startTime;
 

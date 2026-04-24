@@ -13,6 +13,7 @@ import { Card, CardContent } from "@/components/ui/Card";
 import { Brain, Cpu, Database, Fingerprint, Rocket, ArrowRight, ArrowLeft, Loader2, Globe, Plus, X, Upload, FileText, Wallet, AlertCircle } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import { cn } from "@/lib/utils";
+import { MODEL_REGISTRY, type LLMProvider } from "@/lib/llm-provider";
 
 const STEPS = [
   { id: "identity", title: "Identity", description: "Define your agent's persona", icon: Fingerprint },
@@ -90,6 +91,7 @@ export default function CreateAgentWizard() {
     priceUsdc: 0,
     isInitiallyFree: true,
     initialMemory: "",
+    llmProvider: "groq" as LLMProvider, // Default provider
     llmModel: "llama-3.3-70b-versatile", // Default Groq model
   });
 
@@ -339,8 +341,36 @@ export default function CreateAgentWizard() {
                   </div>
 
                   <div className="grid grid-cols-1 gap-6">
+                    {/* Provider Selection */}
                     <div className="flex flex-col gap-3">
-                      <label className="text-[10px] uppercase font-bold tracking-widest text-foreground/40">Language Model</label>
+                      <label className="text-[10px] uppercase font-bold tracking-widest text-foreground/40">LLM Provider</label>
+                      <div className="grid grid-cols-3 gap-3">
+                        {(["groq", "openai", "anthropic"] as LLMProvider[]).map((provider) => (
+                          <button
+                            key={provider}
+                            type="button"
+                            onClick={() => {
+                              const defaultModel = MODEL_REGISTRY[provider][0]?.id || "";
+                              setFormData(prev => ({ ...prev, llmProvider: provider, llmModel: defaultModel }));
+                            }}
+                            className={`px-4 py-3 rounded-xl font-medium text-sm transition-all capitalize ${
+                              formData.llmProvider === provider
+                                ? "bg-primary text-white shadow-lg"
+                                : "bg-white/50 border border-black/10 hover:border-primary/30"
+                            }`}
+                          >
+                            {provider === "groq" && "Groq"}
+                            {provider === "openai" && "OpenAI"}
+                            {provider === "anthropic" && "Anthropic"}
+                          </button>
+                        ))}
+                      </div>
+                      <p className="text-[10px] text-foreground/40">Choose your preferred AI provider for this agent.</p>
+                    </div>
+
+                    {/* Model Selection */}
+                    <div className="flex flex-col gap-3">
+                      <label className="text-[10px] uppercase font-bold tracking-widest text-foreground/40">Model</label>
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-lg bg-white shadow-sm flex items-center justify-center shrink-0">
                           <Cpu size={20} className="text-primary" />
@@ -350,14 +380,16 @@ export default function CreateAgentWizard() {
                           onChange={(e) => setFormData(prev => ({ ...prev, llmModel: e.target.value }))}
                           className="flex-1 bg-white border border-black/10 px-4 py-3 rounded-xl text-sm font-medium focus:outline-none focus:border-primary/30 transition-all cursor-pointer"
                         >
-                          <option value="llama-3.3-70b-versatile">Llama 3.3 70B Versatile (Recommended)</option>
-                          <option value="llama-3.1-70b-versatile">Llama 3.1 70B Versatile</option>
-                          <option value="llama-3.1-8b-instant">Llama 3.1 8B Instant (Fast)</option>
-                          <option value="mixtral-8x7b-32768">Mixtral 8x7B (32k context)</option>
-                          <option value="gemma2-9b-it">Gemma 2 9B IT</option>
+                          {MODEL_REGISTRY[formData.llmProvider].map((model) => (
+                            <option key={model.id} value={model.id}>
+                              {model.name}
+                            </option>
+                          ))}
                         </select>
                       </div>
-                      <p className="text-[10px] text-foreground/40">Different models offer trade-offs between speed, cost, and capability.</p>
+                      <p className="text-[10px] text-foreground/40">
+                        {MODEL_REGISTRY[formData.llmProvider].find(m => m.id === formData.llmModel)?.description || "Select a model"}
+                      </p>
                     </div>
 
                     <div 

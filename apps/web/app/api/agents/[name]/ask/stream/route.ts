@@ -72,14 +72,15 @@ export async function POST(
   }
   // ── End Payment Gate ────────────────────────────────────────────────────────
 
-  // RAG retrieval + Groq streaming
+  // RAG retrieval + LLM streaming
   const ragStream = await streamAgentQuery(
     agent.id,
     agent.name,
     agent.description,
     body.question.trim(),
     agent.personality, // Use extracted personality for stronger responses
-    agent.llm_model || "llama-3.3-70b-versatile" // Use agent's selected model
+    agent.llm_provider || "groq", // Use agent's selected provider
+    agent.llm_model // Use agent's selected model
   );
 
   // Fire-and-forget query count increment

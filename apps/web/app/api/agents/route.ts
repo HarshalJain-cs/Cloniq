@@ -119,6 +119,7 @@ export async function POST(request: NextRequest) {
       initialMemory,
       ensName,
       ownerWallet,
+      llmProvider,
       llmModel,
     } = body;
 
@@ -195,17 +196,17 @@ export async function POST(request: NextRequest) {
         )
       : [];
 
-    // Validate and set LLM model
-    const ALLOWED_MODELS = [
-      "llama-3.3-70b-versatile",
-      "llama-3.1-70b-versatile",
-      "llama-3.1-8b-instant",
-      "mixtral-8x7b-32768",
-      "gemma2-9b-it",
-    ];
-    const selectedModel = typeof llmModel === "string" && ALLOWED_MODELS.includes(llmModel)
+    // Validate and set LLM provider and model
+    const ALLOWED_PROVIDERS = ["groq", "openai", "anthropic"];
+    const selectedProvider = typeof llmProvider === "string" && ALLOWED_PROVIDERS.includes(llmProvider)
+      ? llmProvider
+      : "groq";
+
+    const selectedModel = typeof llmModel === "string" && llmModel.trim().length > 0
       ? llmModel
-      : "llama-3.3-70b-versatile";
+      : (selectedProvider === "openai" ? "gpt-4o" :
+         selectedProvider === "anthropic" ? "claude-sonnet-4-20250514" :
+         "llama-3.3-70b-versatile");
 
     const { data: agent, error: insertError } = await supabase
       .from("agents")
@@ -221,6 +222,7 @@ export async function POST(request: NextRequest) {
         ens_name: typeof ensName === "string" ? ensName.trim() : null,
         endpoint_url: `/api/agents/${normalizedName}/ask`,
         status: "active",
+        llm_provider: selectedProvider,
         llm_model: selectedModel,
       })
       .select()
