@@ -63,6 +63,33 @@ export default function TopupModal({ walletAddress, currentBalance = 0, onClose,
           description: `Add ${amountUsdc} USDC credits`,
           order_id: order.order_id,
           theme: { color: "#000000" },
+          modal: {
+            ondismiss: () => reject(new Error("Payment cancelled")),
+            backdropclose: false,
+            escape: true,
+            animation: true,
+          },
+          config: {
+            display: {
+              blocks: {
+                banks: {
+                  name: 'All payment methods',
+                  instruments: [
+                    { method: 'upi' },
+                    { method: 'card' },
+                    { method: 'netbanking' },
+                  ],
+                },
+              },
+              sequence: ['block.banks'],
+              preferences: {
+                show_default_blocks: true,
+              },
+            },
+          },
+          prefill: {
+            method: "upi",
+          },
           handler: async (response: any) => {
             // 3. Verify payment
             const verifyRes = await fetch("/api/topup/verify", {
@@ -81,8 +108,13 @@ export default function TopupModal({ walletAddress, currentBalance = 0, onClose,
             onSuccess(result.new_balance);
             resolve();
           },
-          modal: { ondismiss: () => reject(new Error("Payment cancelled")) },
         });
+
+        // Force high z-index for Razorpay modal to appear above navbar
+        const style = document.createElement('style');
+        style.textContent = '.razorpay-container { z-index: 99999 !important; }';
+        document.head.appendChild(style);
+
         rzp.open();
       });
     } catch (err: any) {
@@ -95,7 +127,7 @@ export default function TopupModal({ walletAddress, currentBalance = 0, onClose,
   const presets = [85, 170, 425, 850];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
       <AnimatePresence>
         <motion.div
@@ -183,9 +215,15 @@ export default function TopupModal({ walletAddress, currentBalance = 0, onClose,
                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
                 Proceed to Payment ₹{amountInr}
               </Button>
-              <p className="text-center text-[10px] text-foreground/40 mt-3">
-                Razorpay Test Mode • Use test cards or UPI: <code className="bg-black/10 px-1.5 py-0.5 rounded font-mono">success@razorpay</code>
-              </p>
+              <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-xl">
+                <p className="text-[10px] font-bold text-amber-800 mb-1">Test Payment Instructions:</p>
+                <p className="text-[10px] text-amber-700">
+                  • For UPI: Use <code className="bg-amber-200 px-1.5 py-0.5 rounded font-mono font-bold">success@razorpay</code> in the UPI ID field
+                </p>
+                <p className="text-[10px] text-amber-700">
+                  • For Cards: Use any test card from Razorpay test docs
+                </p>
+              </div>
             </>
           )}
         </motion.div>

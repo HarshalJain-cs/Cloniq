@@ -121,6 +121,14 @@ export async function POST(request: NextRequest) {
       ownerWallet,
       llmProvider,
       llmModel,
+      openaiApiKey,
+      anthropicApiKey,
+      twitterPersonality,
+      moodExcited,
+      moodFrustrated,
+      moodThoughtful,
+      moodHelpful,
+      moodCasual,
     } = body;
 
     if (!isNonEmptyString(name)) {
@@ -208,23 +216,54 @@ export async function POST(request: NextRequest) {
          selectedProvider === "anthropic" ? "claude-sonnet-4-20250514" :
          "llama-3.3-70b-versatile");
 
+    // Validate API keys for OpenAI and Anthropic
+    if (selectedProvider === "openai") {
+      if (!isNonEmptyString(openaiApiKey)) {
+        return NextResponse.json(
+          { error: "OpenAI API key is required when using OpenAI models" },
+          { status: 400 }
+        );
+      }
+    }
+
+    if (selectedProvider === "anthropic") {
+      if (!isNonEmptyString(anthropicApiKey)) {
+        return NextResponse.json(
+          { error: "Anthropic API key is required when using Anthropic models" },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Prepare agent data with optional API keys
+    const agentData: Record<string, any> = {
+      name: normalizedName,
+      description: description.trim(),
+      owner_address: typeof ownerWallet === "string" ? ownerWallet : "0x0000000000000000000000000000000000000000",
+      owner_wallet: typeof ownerWallet === "string" ? ownerWallet.toLowerCase() : null,
+      wallet_address: walletAddress,
+      skill_tags: tags,
+      price_usdc: price,
+      is_free: isFree,
+      ens_name: typeof ensName === "string" ? ensName.trim() : null,
+      endpoint_url: `/api/agents/${normalizedName}/ask`,
+      status: "active",
+      llm_provider: selectedProvider,
+      llm_model: selectedModel,
+    };
+
+    // Add API keys only if provided (store encrypted in production)
+    if (selectedProvider === "openai" && isNonEmptyString(openaiApiKey)) {
+      agentData.openai_api_key = openaiApiKey;
+    }
+
+    if (selectedProvider === "anthropic" && isNonEmptyString(anthropicApiKey)) {
+      agentData.anthropic_api_key = anthropicApiKey;
+    }
+
     const { data: agent, error: insertError } = await supabase
       .from("agents")
-      .insert({
-        name: normalizedName,
-        description: description.trim(),
-        owner_address: typeof ownerWallet === "string" ? ownerWallet : "0x0000000000000000000000000000000000000000",
-        owner_wallet: typeof ownerWallet === "string" ? ownerWallet.toLowerCase() : null,
-        wallet_address: walletAddress,
-        skill_tags: tags,
-        price_usdc: price,
-        is_free: isFree,
-        ens_name: typeof ensName === "string" ? ensName.trim() : null,
-        endpoint_url: `/api/agents/${normalizedName}/ask`,
-        status: "active",
-        llm_provider: selectedProvider,
-        llm_model: selectedModel,
-      })
+      .insert(agentData)
       .select()
       .single();
 
@@ -239,6 +278,92 @@ export async function POST(request: NextRequest) {
     let chunksCreated = 0;
     let personalityExtracted = null;
 
+    // Combine all personality sources
+    const personalitySources = [];
+
+    // 1. Twitter personality
+    if (typeof twitterPersonality === "string" && twitterPersonality.trim().length > 0) {
+      personalitySources.push(`TWITTER ANALYSIS:\n${twitterPersonality}`);
+    }
+
+    // 2. 5 Mood responses
+    const moodResponses = [];
+    if (moodExcited) moodResponses.push(`EXCITED: "${moodExcited}"`);
+    if (moodFrustrated) moodResponses.push(`FRUSTRATED: "${moodFrustrated}"`);
+    if (moodThoughtful) moodResponses.push(`THOUGHTFUL: "${moodThoughtful}"`);
+    if (moodHelpful) moodResponses.push(`HELPFUL: "${moodHelpful}"`);
+    if (moodCasual) moodResponses.push(`CASUAL: "${moodCasual}"`);
+
+    if (moodResponses.length > 0) {
+      personalitySources.push(`EMOTIONAL RANGE:\n${moodResponses.join('\n')}`);
+    }
+
+    // Create comprehensive personality profile
+    if (personalitySources.length > 0) {
+      try {
+        console.log(`[POST /api/agents] Building personality profile for ${normalizedName}...`);
+
+        // Combine all sources
+        const combinedPersonality = personalitySources.join('\n\n');
+
+        // Extract final personality using Groq
+        const groqApiKey = process.env.GROQ_API_KEY;
+        if (groqApiKey) {
+          const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${groqApiKey}`,
+            },
+            body: JSON.stringify({
+              model: "llama-3.3-70b-versatile",
+              messages: [
+                {
+                  role: "system",
+                  content: `You are a personality extraction expert. Analyze the provided data and create a comprehensive personality profile that captures:
+1. EXACT communication style (tone, word choice, sentence structure, punctuation)
+2. EMOTIONAL range across different moods
+3. Specific phrases, slang, and expressions they use
+4. Emojis and how they're used
+5. Core values and motivations
+6. Humor style
+7. Decision-making approach
+
+Create a profile that an AI agent can use to CLONE this person's communication style exactly. Be specific about HOW they talk, not just what they talk about.`,
+                },
+                {
+                  role: "user",
+                  content: combinedPersonality,
+                },
+              ],
+              temperature: 0.7,
+              max_tokens: 1000,
+            }),
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            personalityExtracted = data.choices[0]?.message?.content || combinedPersonality;
+          } else {
+            personalityExtracted = combinedPersonality;
+          }
+        } else {
+          personalityExtracted = combinedPersonality;
+        }
+
+        // Store personality in agent record
+        await supabase
+          .from("agents")
+          .update({ personality: personalityExtracted })
+          .eq("id", agent.id);
+
+        console.log(`[POST /api/agents] Personality profile created for ${normalizedName}`);
+      } catch (err) {
+        console.error("[POST /api/agents] Personality extraction failed:", err);
+      }
+    }
+
+    // Handle initial memory/knowledge base
     if (
       typeof initialMemory === "string" &&
       initialMemory.trim().length > 0
@@ -251,17 +376,19 @@ export async function POST(request: NextRequest) {
           "initial-seed"
         );
 
-        // Extract personality from MD file
-        console.log(`[POST /api/agents] Extracting personality for ${normalizedName}...`);
-        personalityExtracted = await extractPersonality(initialMemory);
+        // Extract personality from MD file (if no Twitter personality)
+        if (!personalityExtracted) {
+          console.log(`[POST /api/agents] Extracting personality from memory for ${normalizedName}...`);
+          personalityExtracted = await extractPersonality(initialMemory);
 
-        // Store personality in agent record
-        await supabase
-          .from("agents")
-          .update({ personality: personalityExtracted })
-          .eq("id", agent.id);
+          // Store personality in agent record
+          await supabase
+            .from("agents")
+            .update({ personality: personalityExtracted })
+            .eq("id", agent.id);
 
-        console.log(`[POST /api/agents] Personality extracted:`, personalityExtracted);
+          console.log(`[POST /api/agents] Personality extracted:`, personalityExtracted);
+        }
       } catch (err) {
         console.error("[POST /api/agents] Memory/personality processing failed:", err);
       }

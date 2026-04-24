@@ -10,7 +10,7 @@ import { baseSepolia } from "thirdweb/chains";
 import { inAppWallet, createWallet } from "thirdweb/wallets";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
-import { Brain, Cpu, Database, Fingerprint, Rocket, ArrowRight, ArrowLeft, Loader2, Globe, Plus, X, Upload, FileText, Wallet, AlertCircle } from "lucide-react";
+import { Brain, Cpu, Database, Fingerprint, Rocket, ArrowRight, ArrowLeft, Loader2, Globe, Plus, X, Upload, FileText, Wallet, AlertCircle, Twitter, CheckCircle, Smile, Frown, Lightbulb, Heart, MessageCircle, Download } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import { cn } from "@/lib/utils";
 import { MODEL_REGISTRY, type LLMProvider } from "@/lib/llm-provider";
@@ -82,6 +82,8 @@ export default function CreateAgentWizard() {
     name?: string;
     description?: string;
   }>({});
+  const [twitterPersonality, setTwitterPersonality] = useState<string | null>(null);
+  const [isScrapingTwitter, setIsScrapingTwitter] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -93,6 +95,16 @@ export default function CreateAgentWizard() {
     initialMemory: "",
     llmProvider: "groq" as LLMProvider, // Default provider
     llmModel: "llama-3.3-70b-versatile", // Default Groq model
+    openaiApiKey: "",
+    anthropicApiKey: "",
+    twitterUsername: "",
+    importTwitterPersonality: false,
+    // 5 Mood/Emotion Questions
+    moodExcited: "",
+    moodFrustrated: "",
+    moodThoughtful: "",
+    moodHelpful: "",
+    moodCasual: "",
   });
 
   const nextStep = () => currentStep < STEPS.length - 1 && setCurrentStep(currentStep + 1);
@@ -159,15 +171,53 @@ export default function CreateAgentWizard() {
     file.text().then(text => setFormData(prev => ({ ...prev, initialMemory: text })));
   };
 
+  const handleTwitterScrape = async () => {
+    if (!formData.twitterUsername) return;
+
+    setIsScrapingTwitter(true);
+    setError(null);
+
+    try {
+      const response = await fetch("/api/twitter/scrape", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: formData.twitterUsername }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "Failed to scrape Twitter profile");
+      }
+
+      setTwitterPersonality(result.data.personality_summary);
+      setError(null);
+    } catch (err: any) {
+      setError(`Twitter scraping failed: ${err.message}`);
+      setTwitterPersonality(null);
+    } finally {
+      setIsScrapingTwitter(false);
+    }
+  };
+
   const handleSubmit = async () => {
     setIsSubmitting(true);
     setError(null);
+
+    // If Twitter personality import is enabled, scrape first
+    if (formData.importTwitterPersonality && formData.twitterUsername && !twitterPersonality) {
+      await handleTwitterScrape();
+    }
 
     try {
       const response = await fetch("/api/agents", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...formData, ownerWallet: account?.address ?? null }),
+        body: JSON.stringify({
+          ...formData,
+          ownerWallet: account?.address ?? null,
+          twitterPersonality: twitterPersonality || undefined,
+        }),
       });
 
       const result = await response.json();
@@ -392,6 +442,60 @@ export default function CreateAgentWizard() {
                       </p>
                     </div>
 
+                    {/* API Key Input for OpenAI */}
+                    {formData.llmProvider === "openai" && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="flex flex-col gap-2"
+                      >
+                        <label className="text-[10px] uppercase font-bold tracking-widest text-foreground/40">
+                          OpenAI API Key *
+                        </label>
+                        <input
+                          type="password"
+                          name="openaiApiKey"
+                          value={formData.openaiApiKey}
+                          onChange={handleChange}
+                          placeholder="sk-proj-..."
+                          className="bg-white/50 border border-black/5 px-4 py-3 rounded-xl text-sm focus:outline-none focus:border-primary/30 transition-all font-mono"
+                        />
+                        <p className="text-[10px] text-foreground/40">
+                          Your OpenAI API key will be used for this agent's queries. Get it from{" "}
+                          <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" className="text-primary underline">
+                            platform.openai.com
+                          </a>
+                        </p>
+                      </motion.div>
+                    )}
+
+                    {/* API Key Input for Anthropic */}
+                    {formData.llmProvider === "anthropic" && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="flex flex-col gap-2"
+                      >
+                        <label className="text-[10px] uppercase font-bold tracking-widest text-foreground/40">
+                          Anthropic API Key *
+                        </label>
+                        <input
+                          type="password"
+                          name="anthropicApiKey"
+                          value={formData.anthropicApiKey}
+                          onChange={handleChange}
+                          placeholder="sk-ant-..."
+                          className="bg-white/50 border border-black/5 px-4 py-3 rounded-xl text-sm focus:outline-none focus:border-primary/30 transition-all font-mono"
+                        />
+                        <p className="text-[10px] text-foreground/40">
+                          Your Anthropic API key will be used for this agent's queries. Get it from{" "}
+                          <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener noreferrer" className="text-primary underline">
+                            console.anthropic.com
+                          </a>
+                        </p>
+                      </motion.div>
+                    )}
+
                     <div 
                       className={`p-6 rounded-2xl border transition-all cursor-pointer ${formData.isInitiallyFree ? "bg-primary/5 border-primary/20" : "bg-white/50 border-black/5"}`}
                       onClick={handleToggleFree}
@@ -435,14 +539,231 @@ export default function CreateAgentWizard() {
                     </div>
                     <div>
                       <h3 className="font-bold text-xl">Knowledge Base</h3>
-                      <p className="text-sm text-foreground/60">Seed your agent with initial RAG context.</p>
+                      <p className="text-sm text-foreground/60">Seed your agent with initial RAG context or import personality from Twitter/X.</p>
                     </div>
                   </div>
 
                   <div className="flex flex-col gap-4">
+                    {/* Twitter Personality Import */}
+                    <div className="p-5 border-2 border-sky-500/20 rounded-2xl bg-gradient-to-br from-sky-50 to-white">
+                      <div className="flex flex-col gap-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-sky-500/10 flex items-center justify-center">
+                              <Twitter className="w-5 h-5 text-sky-500" />
+                            </div>
+                            <div>
+                              <label className="text-sm font-bold text-foreground">
+                                Import Personality from Twitter/X
+                              </label>
+                              <p className="text-[10px] text-foreground/50">Analyze your tweets to clone your writing style</p>
+                            </div>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setFormData(prev => ({ ...prev, importTwitterPersonality: !prev.importTwitterPersonality }))}
+                            className={`w-11 h-6 rounded-full relative transition-colors ${
+                              formData.importTwitterPersonality ? "bg-sky-500" : "bg-foreground/10"
+                            }`}
+                          >
+                            <div className={`w-4 h-4 rounded-full bg-white absolute top-1 transition-all shadow-sm ${
+                              formData.importTwitterPersonality ? "right-1" : "left-1"
+                            }`} />
+                          </button>
+                        </div>
+
+                        {formData.importTwitterPersonality && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            className="flex flex-col gap-3 pt-3 border-t border-sky-200"
+                          >
+                            <div className="flex gap-2">
+                              <div className="flex items-center gap-2 flex-1">
+                                <span className="text-foreground/40 font-bold text-base">@</span>
+                                <input
+                                  name="twitterUsername"
+                                  type="text"
+                                  value={formData.twitterUsername}
+                                  onChange={handleChange}
+                                  placeholder="your_twitter_username"
+                                  className="flex-1 bg-white border-2 border-sky-500/30 px-4 py-3 rounded-xl text-sm focus:outline-none focus:border-sky-500 transition-all font-medium"
+                                />
+                              </div>
+                              <Button
+                                type="button"
+                                onClick={handleTwitterScrape}
+                                disabled={!formData.twitterUsername || isScrapingTwitter}
+                                className="shrink-0 bg-sky-500 hover:bg-sky-600 text-white px-6"
+                              >
+                                {isScrapingTwitter ? (
+                                  <>
+                                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                    Analyzing...
+                                  </>
+                                ) : (
+                                  <>
+                                    <Twitter className="w-4 h-4 mr-2" />
+                                    Analyze
+                                  </>
+                                )}
+                              </Button>
+                            </div>
+
+                            {twitterPersonality && (
+                              <motion.div
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="p-4 bg-green-50 border-2 border-green-300 rounded-xl"
+                              >
+                                <div className="flex items-start gap-2">
+                                  <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
+                                  <div>
+                                    <p className="text-xs font-bold text-green-800 mb-1">Personality Extracted Successfully!</p>
+                                    <p className="text-xs text-green-700 leading-relaxed">{twitterPersonality}</p>
+                                  </div>
+                                </div>
+                              </motion.div>
+                            )}
+
+                            {!twitterPersonality && (
+                              <div className="p-4 bg-sky-50 border border-sky-200 rounded-xl">
+                                <p className="text-xs text-sky-700 leading-relaxed">
+                                  💡 <strong>How it works:</strong> We'll fetch your recent tweets and analyze your communication style, tone, topics, and personality traits using AI. This creates an agent that truly sounds like you!
+                                </p>
+                              </div>
+                            )}
+                          </motion.div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3 text-foreground/30">
+                      <div className="flex-1 h-px bg-black/5" />
+                      <span className="text-[10px] uppercase font-bold tracking-widest">personality questions</span>
+                      <div className="flex-1 h-px bg-black/5" />
+                    </div>
+
+                    {/* 5 Mood/Emotion Questions */}
+                    <div className="p-6 border-2 border-purple-500/20 rounded-2xl bg-gradient-to-br from-purple-50 to-white">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center">
+                          <Heart className="w-5 h-5 text-purple-500" />
+                        </div>
+                        <div>
+                          <h4 className="text-sm font-bold text-foreground">Emotional Personality Capture</h4>
+                          <p className="text-[10px] text-foreground/50">Help us clone your exact communication style in different moods</p>
+                        </div>
+                      </div>
+
+                      <div className="space-y-4">
+                        {/* Question 1: Excited */}
+                        <div>
+                          <label className="flex items-center gap-2 text-xs font-bold text-foreground/70 mb-2">
+                            <Smile className="w-4 h-4 text-green-500" />
+                            When you're EXCITED about something, how do you express it?
+                          </label>
+                          <textarea
+                            name="moodExcited"
+                            value={formData.moodExcited}
+                            onChange={handleChange}
+                            placeholder="Example: 'YOOO this is insane! 🔥 Can't believe this is happening fr fr...'"
+                            rows={2}
+                            className="w-full bg-white border border-purple-500/20 px-4 py-3 rounded-xl text-sm focus:outline-none focus:border-purple-500/40 transition-all resize-none"
+                          />
+                        </div>
+
+                        {/* Question 2: Frustrated */}
+                        <div>
+                          <label className="flex items-center gap-2 text-xs font-bold text-foreground/70 mb-2">
+                            <Frown className="w-4 h-4 text-orange-500" />
+                            When you're FRUSTRATED, how do you communicate?
+                          </label>
+                          <textarea
+                            name="moodFrustrated"
+                            value={formData.moodFrustrated}
+                            onChange={handleChange}
+                            placeholder="Example: 'Ugh this is so annoying. Why does it always break like this? 😤'"
+                            rows={2}
+                            className="w-full bg-white border border-purple-500/20 px-4 py-3 rounded-xl text-sm focus:outline-none focus:border-purple-500/40 transition-all resize-none"
+                          />
+                        </div>
+
+                        {/* Question 3: Thoughtful/Analytical */}
+                        <div>
+                          <label className="flex items-center gap-2 text-xs font-bold text-foreground/70 mb-2">
+                            <Lightbulb className="w-4 h-4 text-yellow-500" />
+                            When you're being THOUGHTFUL/ANALYTICAL, how do you sound?
+                          </label>
+                          <textarea
+                            name="moodThoughtful"
+                            value={formData.moodThoughtful}
+                            onChange={handleChange}
+                            placeholder="Example: 'Hmm, interesting. If we think about this from first principles...'"
+                            rows={2}
+                            className="w-full bg-white border border-purple-500/20 px-4 py-3 rounded-xl text-sm focus:outline-none focus:border-purple-500/40 transition-all resize-none"
+                          />
+                        </div>
+
+                        {/* Question 4: Helpful/Teaching */}
+                        <div>
+                          <label className="flex items-center gap-2 text-xs font-bold text-foreground/70 mb-2">
+                            <Heart className="w-4 h-4 text-pink-500" />
+                            When you're HELPING/TEACHING someone, how do you talk?
+                          </label>
+                          <textarea
+                            name="moodHelpful"
+                            value={formData.moodHelpful}
+                            onChange={handleChange}
+                            placeholder="Example: 'No worries! Let me break this down for you step by step...'"
+                            rows={2}
+                            className="w-full bg-white border border-purple-500/20 px-4 py-3 rounded-xl text-sm focus:outline-none focus:border-purple-500/40 transition-all resize-none"
+                          />
+                        </div>
+
+                        {/* Question 5: Casual/Relaxed */}
+                        <div>
+                          <label className="flex items-center gap-2 text-xs font-bold text-foreground/70 mb-2">
+                            <MessageCircle className="w-4 h-4 text-blue-500" />
+                            When you're just CHATTING CASUALLY, how do you sound?
+                          </label>
+                          <textarea
+                            name="moodCasual"
+                            value={formData.moodCasual}
+                            onChange={handleChange}
+                            placeholder="Example: 'lol yeah same here. what you been up to lately?'"
+                            rows={2}
+                            className="w-full bg-white border border-purple-500/20 px-4 py-3 rounded-xl text-sm focus:outline-none focus:border-purple-500/40 transition-all resize-none"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="mt-4 p-3 bg-purple-50 border border-purple-200 rounded-xl">
+                        <p className="text-[10px] text-purple-700 leading-relaxed">
+                          💡 <strong>Pro tip:</strong> Write exactly how YOU would say it - use your slang, emojis, punctuation style. The more authentic, the better your agent will sound like you!
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3 text-foreground/30">
+                      <div className="flex-1 h-px bg-black/5" />
+                      <span className="text-[10px] uppercase font-bold tracking-widest">upload soul.md template</span>
+                      <div className="flex-1 h-px bg-black/5" />
+                    </div>
+
+                    {/* Download Template Button */}
+                    <a
+                      href="/templates/soul.md"
+                      download="soul-template.md"
+                      className="flex items-center justify-center gap-2 p-4 border-2 border-primary/20 rounded-xl bg-primary/5 hover:bg-primary/10 transition-all text-primary font-bold text-sm"
+                    >
+                      <Download className="w-4 h-4" />
+                      Download soul.md Template
+                    </a>
+
                     {/* File Upload */}
                     <div className="flex flex-col gap-2">
-                      <label className="text-[10px] uppercase font-bold tracking-widest text-foreground/40">Upload .md Document (max 10 MB)</label>
+                      <label className="text-[10px] uppercase font-bold tracking-widest text-foreground/40">Upload Your soul.md File (max 10 MB)</label>
                       <label className={`flex items-center gap-4 p-5 rounded-2xl border-2 border-dashed cursor-pointer transition-all ${uploadedFile ? "border-primary/30 bg-primary/5" : "border-black/10 hover:border-primary/20 hover:bg-black/[0.02]"}`}>
                         <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
                           {uploadedFile ? <FileText size={20} /> : <Upload size={20} />}
@@ -536,9 +857,14 @@ export default function CreateAgentWizard() {
             </Button>
             
             {currentStep === STEPS.length - 1 ? (
-              <Button 
+              <Button
                 onClick={handleSubmit}
-                disabled={isSubmitting || !formData.name}
+                disabled={
+                  isSubmitting ||
+                  !formData.name ||
+                  (formData.llmProvider === "openai" && !formData.openaiApiKey) ||
+                  (formData.llmProvider === "anthropic" && !formData.anthropicApiKey)
+                }
                 className="px-10 bg-primary hover:bg-primary/90 text-white"
               >
                 {isSubmitting ? (
