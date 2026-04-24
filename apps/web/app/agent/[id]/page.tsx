@@ -35,12 +35,12 @@ export default async function AgentPage({ params }: { params: Promise<{ id: stri
     <div className="min-h-screen pt-24 pb-8">
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 px-6">
         {/* Left Column: Agent Details - Separate Scrolling */}
-        <div className="lg:col-span-5 lg:sticky lg:top-24 lg:h-[calc(100vh-8rem)] lg:overflow-y-auto overscroll-contain">
+        <div className="lg:col-span-5 lg:sticky lg:top-24 lg:self-start lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto lg:overscroll-contain scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent hover:scrollbar-thumb-gray-400">
           <AgentProfileDetails agent={mappedAgent} />
         </div>
 
         {/* Right Column: Chat - Separate Scrolling */}
-        <div className="lg:col-span-7">
+        <div className="lg:col-span-7 lg:min-h-[calc(100vh-8rem)]">
           <ChatInterface
             agentId={mappedAgent.id}
             agentName={mappedAgent.name}
