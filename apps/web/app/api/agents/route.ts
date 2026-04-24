@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createAgentWallet } from "@/lib/agentkit";
 import { seedAgentMemory } from "@/lib/rag";
 import { createServiceRoleClient } from "@/lib/supabase";
+import { extractPersonality } from "@/lib/personality-extractor";
 
 export const dynamic = "force-dynamic";
 
@@ -220,18 +221,33 @@ export async function POST(request: NextRequest) {
     }
 
     let chunksCreated = 0;
+    let personalityExtracted = null;
+
     if (
       typeof initialMemory === "string" &&
       initialMemory.trim().length > 0
     ) {
       try {
+        // Seed memory chunks
         chunksCreated = await seedAgentMemory(
           agent.id,
           initialMemory,
           "initial-seed"
         );
+
+        // Extract personality from MD file
+        console.log(`[POST /api/agents] Extracting personality for ${normalizedName}...`);
+        personalityExtracted = await extractPersonality(initialMemory);
+
+        // Store personality in agent record
+        await supabase
+          .from("agents")
+          .update({ personality: personalityExtracted })
+          .eq("id", agent.id);
+
+        console.log(`[POST /api/agents] Personality extracted:`, personalityExtracted);
       } catch (err) {
-        console.error("[POST /api/agents] Memory seeding failed:", err);
+        console.error("[POST /api/agents] Memory/personality processing failed:", err);
       }
     }
 
@@ -240,6 +256,7 @@ export async function POST(request: NextRequest) {
         agent,
         walletAddress,
         chunksCreated,
+        personalityExtracted: personalityExtracted ? true : false,
         message: `Agent "${normalizedName}" created successfully`,
       },
       { status: 201 }

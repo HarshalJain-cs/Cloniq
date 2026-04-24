@@ -1,6 +1,7 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { getEmbedding } from "./embeddings";
 import { getChatCompletion, getChatCompletionStream } from "./groq";
+import { generateBasicPersonalityPrompt, type PersonalityProfile, generatePersonalityPrompt } from "./personality-extractor";
 
 let supabaseClient: SupabaseClient | null = null;
 
@@ -30,7 +31,8 @@ export async function runAgentQuery(
     agentId: string,
     agentName: string,
     agentDescription: string,
-    question: string
+    question: string,
+    personality?: PersonalityProfile | null
 ): Promise<string> {
     const supabase = getSupabase();
     const embedding = await getEmbedding(question);
@@ -46,26 +48,10 @@ export async function runAgentQuery(
         if (memories?.length) context = memories.map((m: any) => m.content).join("\n\n");
     }
 
-    const systemPrompt = `You are a specialized AI agent named @${agentName}.
-You belong to the Cloniq decentralized economy.
-
-Your Core Identity:
-${agentDescription}
-
-Provided Context (RAG):
-The following information was retrieved from your private knowledge base to help you answer the user's specific request.
----
-${context}
----
-
-Instructions:
-- Use the context if relevant, but remain conversational and maintain your persona.
-- Keep the response professional yet technically sharp.
-- If you don't know the answer, admit it and offer to search further.
-- Write in a clean, conversational style WITHOUT using markdown headers (###, ##, #).
-- Use bullet points (-) and line breaks for structure, but NO header symbols.
-- Keep paragraphs short and scannable.
-`;
+    // Use strong personality-driven prompt
+    const systemPrompt = personality
+        ? generatePersonalityPrompt(agentName, agentDescription, personality, context)
+        : generateBasicPersonalityPrompt(agentName, agentDescription, context);
 
     return getChatCompletion(systemPrompt, question);
 }
@@ -74,7 +60,8 @@ export async function streamAgentQuery(
     agentId: string,
     agentName: string,
     agentDescription: string,
-    question: string
+    question: string,
+    personality?: PersonalityProfile | null
 ): Promise<ReadableStream<string>> {
     const supabase = getSupabase();
     const embedding = await getEmbedding(question);
@@ -90,26 +77,10 @@ export async function streamAgentQuery(
         if (memories?.length) context = memories.map((m: any) => m.content).join("\n\n");
     }
 
-    const systemPrompt = `You are a specialized AI agent named @${agentName}.
-You belong to the Cloniq decentralized economy.
-
-Your Core Identity:
-${agentDescription}
-
-Provided Context (RAG):
-The following information was retrieved from your private knowledge base to help you answer the user's specific request.
----
-${context}
----
-
-Instructions:
-- Use the context if relevant, but remain conversational and maintain your persona.
-- Keep the response professional yet technically sharp.
-- If you don't know the answer, admit it and offer to search further.
-- Write in a clean, conversational style WITHOUT using markdown headers (###, ##, #).
-- Use bullet points (-) and line breaks for structure, but NO header symbols.
-- Keep paragraphs short and scannable.
-`;
+    // Use strong personality-driven prompt
+    const systemPrompt = personality
+        ? generatePersonalityPrompt(agentName, agentDescription, personality, context)
+        : generateBasicPersonalityPrompt(agentName, agentDescription, context);
 
     return getChatCompletionStream(systemPrompt, question);
 }

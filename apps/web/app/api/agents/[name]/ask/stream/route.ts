@@ -77,7 +77,8 @@ export async function POST(
     agent.id,
     agent.name,
     agent.description,
-    body.question.trim()
+    body.question.trim(),
+    agent.personality // Use extracted personality for stronger responses
   );
 
   // Fire-and-forget query count increment
