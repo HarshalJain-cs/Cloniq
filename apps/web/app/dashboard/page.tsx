@@ -30,39 +30,36 @@ export default function DashboardPage() {
   const [recentChats, setRecentChats] = useState<any[]>([]);
 
   useEffect(() => {
-    // TODO: Fetch real data from API
-    // For now, using mock data
-    setStats({
-      totalSpent: 12.45,
-      totalQueries: 87,
-      agentsUsed: 5,
-      thisMonth: 3.20,
-    });
+    if (!account?.address) return;
 
-    setRecentChats([
-      {
-        id: "1",
-        agentName: "blockchain-dev",
-        message: "How do I implement ERC-6551 token bound accounts?",
-        timestamp: new Date(Date.now() - 3600000),
-        cost: 0.02,
-      },
-      {
-        id: "2",
-        agentName: "legal-advisor",
-        message: "What are the legal requirements for launching a DAO?",
-        timestamp: new Date(Date.now() - 7200000),
-        cost: 0.05,
-      },
-      {
-        id: "3",
-        agentName: "fitness-coach",
-        message: "Create a workout plan for muscle building",
-        timestamp: new Date(Date.now() - 86400000),
-        cost: 0,
-      },
-    ]);
-  }, [account]);
+    // Fetch real user stats from API
+    const fetchStats = async () => {
+      try {
+        const response = await fetch(
+          `/api/user/stats?wallet=${account.address}`
+        );
+        const data = await response.json();
+
+        if (data.stats) {
+          setStats(data.stats);
+        }
+
+        if (data.recentChats) {
+          setRecentChats(
+            data.recentChats.map((chat: any) => ({
+              ...chat,
+              timestamp: new Date(chat.timestamp),
+            }))
+          );
+        }
+      } catch (error) {
+        console.error("Failed to fetch dashboard stats:", error);
+        // Keep stats at 0 on error
+      }
+    };
+
+    fetchStats();
+  }, [account?.address]);
 
   if (!account) {
     return (

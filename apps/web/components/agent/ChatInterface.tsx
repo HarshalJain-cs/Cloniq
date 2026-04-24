@@ -6,7 +6,7 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { cn } from "@/lib/utils";
-import { useFetchWithPayment } from "thirdweb/react";
+import { useFetchWithPayment, useActiveAccount } from "thirdweb/react";
 import { client } from "@/lib/thirdweb";
 
 // Strip markdown headers from chat messages for cleaner display
@@ -34,6 +34,7 @@ export default function ChatInterface({
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const account = useActiveAccount();
 
   // Auto-scroll to bottom when messages change
   useEffect(() => {
@@ -82,9 +83,18 @@ export default function ChatInterface({
 
     try {
       const url = `/api/agents/${agentName}/ask/stream`;
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
+
+      // Include user wallet for query logging
+      if (account?.address) {
+        headers["X-User-Wallet"] = account.address;
+      }
+
       const init = {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify({ question: userMessage.content }),
       };
 

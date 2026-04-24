@@ -85,8 +85,14 @@ export async function POST(
     if (e) console.error("[stream] increment_query_count failed:", e);
   });
 
+  // Get user wallet for logging
+  const userWallet = request.headers.get("X-User-Wallet") || "anonymous";
+  const startTime = Date.now();
+
   // Wrap token chunks in SSE format
   const encoder = new TextEncoder();
+  let fullAnswer = "";
+
   const sseStream = new ReadableStream({
     async start(controller) {
       const reader = ragStream.getReader();
@@ -96,8 +102,29 @@ export async function POST(
           if (done) {
             controller.enqueue(encoder.encode("data: [DONE]\n\n"));
             controller.close();
+
+            // Log query after streaming completes
+            const responseTime = Date.now() - startTime;
+            if (userWallet && userWallet !== "anonymous") {
+              supabase
+                .from("query_logs")
+                .insert({
+                  user_wallet: userWallet.toLowerCase(),
+                  agent_id: agent.id,
+                  agent_name: agent.name,
+                  question: body.question.trim(),
+                  answer: fullAnswer,
+                  cost_usdc: agent.is_free ? 0 : Number(agent.price_usdc),
+                  is_free: agent.is_free,
+                  response_time_ms: responseTime,
+                })
+                .then(({ error: e }) => {
+                  if (e) console.error("[stream] query log insert failed:", e);
+                });
+            }
             break;
           }
+          fullAnswer += value;
           controller.enqueue(encoder.encode(`data: ${JSON.stringify(value)}\n\n`));
         }
       } catch (err) {

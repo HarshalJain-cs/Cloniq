@@ -100,16 +100,42 @@ export async function POST(
       // ── End x402 Gate ───────────────────────────────────────────────────────
     }
 
+    const startTime = Date.now();
     const answer = await runAgentQuery(
       agent.id,
       agent.name,
       agent.description,
       body.question.trim()
     );
+    const responseTime = Date.now() - startTime;
 
+    // Increment query count
     supabase.rpc("increment_query_count", { agent_name: name }).then(({ error: e }) => {
       if (e) console.error("[ask] increment_query_count failed:", e);
     });
+
+    // Log query to query_logs table
+    const userWallet = apiKey
+      ? (await verifyApiKey(apiKey))?.walletAddress
+      : request.headers.get("X-User-Wallet") || "anonymous";
+
+    if (userWallet && userWallet !== "anonymous") {
+      supabase
+        .from("query_logs")
+        .insert({
+          user_wallet: userWallet.toLowerCase(),
+          agent_id: agent.id,
+          agent_name: agent.name,
+          question: body.question.trim(),
+          answer: answer,
+          cost_usdc: agent.is_free ? 0 : Number(agent.price_usdc),
+          is_free: agent.is_free,
+          response_time_ms: responseTime,
+        })
+        .then(({ error: e }) => {
+          if (e) console.error("[ask] query log insert failed:", e);
+        });
+    }
 
     return NextResponse.json({
       answer,
