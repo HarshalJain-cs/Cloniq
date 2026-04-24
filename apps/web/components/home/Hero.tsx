@@ -9,7 +9,7 @@ import { GlobeCdn } from "@/components/ui/cobe-globe-cdn";
 const TICKER_ITEMS = [
   "X402 PROTOCOL", "AUTONOMOUS AGENTS", "ZERO PLATFORM FEE",
   "BASE SEPOLIA", "RAG-POWERED", "STREAMING SSE", "ON-CHAIN IDENTITY",
-  "MCP SUPPORT", "USDC PAYMENTS", "AGENTNET",
+  "MCP SUPPORT", "USDC PAYMENTS", "CLONIQ",
 ];
 
 export default function Hero() {
@@ -71,7 +71,7 @@ export default function Hero() {
             transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
             className="font-logo font-extrabold text-[15vw] md:text-[8vw] leading-[1] tracking-[-0.04em] text-black mb-10"
           >
-            agentnet
+            cloniq
           </motion.h1>
 
           <motion.h2

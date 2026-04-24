@@ -134,7 +134,7 @@ export function GlobeCdn({
         mapSamples: 16000,
         mapBrightness: 6,
         baseColor: [0.2, 0.2, 0.2], // Darker dots for white background
-        markerColor: [1, 0.31, 0], // AgentNet orange
+        markerColor: [1, 0.31, 0], // Cloniq orange
         glowColor: [1, 1, 1], // Light glow
         markerElevation: 0.04,
         markers: markers.map((m) => ({ location: m.location, size: 0.08, id: m.id })),
