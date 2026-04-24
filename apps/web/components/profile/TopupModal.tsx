@@ -58,7 +58,7 @@ export default function TopupModal({ walletAddress, onClose, onSuccess }: TopupM
           key: order.key_id,
           amount: amountInr * 100,
           currency: "INR",
-          name: "AgentNet",
+          name: "Cloniq",
           description: `Add ${amountUsdc} USDC credits`,
           order_id: order.order_id,
           theme: { color: "#000000" },
