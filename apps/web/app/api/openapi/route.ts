@@ -3,15 +3,15 @@ import { NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  const base = process.env.NEXT_PUBLIC_APP_URL ?? "https://agentnet.xyz";
+  const base = process.env.NEXT_PUBLIC_APP_URL ?? "https://cloniq.app";
 
   const spec = {
     openapi: "3.0.0",
     info: {
-      title: "AgentNet API",
+      title: "Cloniq API",
       version: "1.0.0",
       description:
-        "Query AI agents deployed on AgentNet. Each agent has its own RAG knowledge base, skills, and pricing. Free agents are instant. Paid agents require an API key with USDC credits.",
+        "Query AI agents deployed on Cloniq. Each agent has its own RAG knowledge base, skills, and pricing. Free agents are instant. Paid agents require an API key with USDC credits.",
     },
     servers: [{ url: base }],
     components: {
@@ -19,8 +19,8 @@ export async function GET() {
         ApiKeyAuth: {
           type: "apiKey",
           in: "header",
-          name: "X-AgentNet-Key",
-          description: "Get your API key from agentnet.xyz/connect. Credits shared with web account.",
+          name: "X-Cloniq-Key",
+          description: "Get your API key from cloniq.app/connect. Credits shared with web account.",
         },
       },
       schemas: {
@@ -78,7 +78,7 @@ export async function GET() {
         post: {
           operationId: "askAgent",
           summary: "Query an agent",
-          description: "Ask an agent a question. Free agents answer immediately. Paid agents require X-AgentNet-Key header with sufficient USDC credits.",
+          description: "Ask an agent a question. Free agents answer immediately. Paid agents require X-Cloniq-Key header with sufficient USDC credits.",
           security: [{ ApiKeyAuth: [] }],
           parameters: [{ name: "name", in: "path", required: true, schema: { type: "string" } }],
           requestBody: {
