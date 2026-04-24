@@ -3,12 +3,12 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 
-const API_URL = process.env.AGENTNET_API_URL ?? "https://agentnet-three.vercel.app";
-const API_KEY = process.env.AGENTNET_API_KEY ?? "";
+const API_URL = process.env.CLONIQ_API_URL ?? "https://agentnet-three.vercel.app";
+const API_KEY = process.env.CLONIQ_API_KEY ?? "";
 
 function headers(): Record<string, string> {
   const h: Record<string, string> = { "Content-Type": "application/json" };
-  if (API_KEY) h["X-AgentNet-Key"] = API_KEY;
+  if (API_KEY) h["X-Cloniq-Key"] = API_KEY;
   return h;
 }
 
@@ -19,16 +19,16 @@ async function apiFetch(path: string, options?: RequestInit) {
   });
   if (!res.ok) {
     const text = await res.text().catch(() => res.statusText);
-    throw new Error(`AgentNet API error ${res.status}: ${text}`);
+    throw new Error(`Cloniq API error ${res.status}: ${text}`);
   }
   return res.json();
 }
 
-const server = new McpServer({ name: "agentnet", version: "0.1.0" });
+const server = new McpServer({ name: "cloniq", version: "0.1.0" });
 
 server.tool(
   "list_agents",
-  "List all active AI agents on AgentNet. Returns name, description, price, skill tags, and query count. No API key needed for free agents.",
+  "List all active AI agents on Cloniq. Returns name, description, price, skill tags, and query count. No API key needed for free agents.",
   {
     tag: z.string().optional().describe("Filter by skill tag, e.g. DeFi, Security, Research"),
     search: z.string().optional().describe("Search agents by name or description"),
@@ -48,14 +48,14 @@ server.tool(
       return `**@${a.name}** — ${price}\n  ${(a.description ?? "").slice(0, 100)}...\n  Tags: ${tags} | Queries: ${(a.query_count ?? 0).toLocaleString()}`;
     });
     return {
-      content: [{ type: "text" as const, text: `## AgentNet — ${agents.length} agent${agents.length !== 1 ? "s" : ""}\n\n${lines.join("\n\n")}` }],
+      content: [{ type: "text" as const, text: `## Cloniq — ${agents.length} agent${agents.length !== 1 ? "s" : ""}\n\n${lines.join("\n\n")}` }],
     };
   }
 );
 
 server.tool(
   "get_agent",
-  "Get full profile of a specific AgentNet agent including description, price, skill tags, and onchain wallet.",
+  "Get full profile of a specific Cloniq agent including description, price, skill tags, and onchain wallet.",
   { name: z.string().describe("Agent name, e.g. solidity-auditor") },
   async ({ name }) => {
     const data = await apiFetch(`/api/agents/${encodeURIComponent(name)}`);
@@ -80,7 +80,7 @@ server.tool(
 
 server.tool(
   "ask_agent",
-  "Ask an AgentNet agent a question. Free agents answer instantly. Paid agents require AGENTNET_API_KEY with USDC credits (auto-deducted). The agent uses its private RAG knowledge base to answer.",
+  "Ask an Cloniq agent a question. Free agents answer instantly. Paid agents require CLONIQ_API_KEY with USDC credits (auto-deducted). The agent uses its private RAG knowledge base to answer.",
   {
     agent_name: z.string().describe("Agent name, e.g. solidity-auditor or defi-analyst"),
     question: z.string().describe("The question to ask"),
@@ -93,7 +93,7 @@ server.tool(
         return {
           content: [{
             type: "text" as const,
-            text: `@${agent_name} is a paid agent ($${Number(a.price_usdc).toFixed(4)}/query). Set AGENTNET_API_KEY in your MCP config to use paid agents. Get a key at: ${API_URL}/connect`,
+            text: `@${agent_name} is a paid agent ($${Number(a.price_usdc).toFixed(4)}/query). Set CLONIQ_API_KEY in your MCP config to use paid agents. Get a key at: ${API_URL}/connect`,
           }],
         };
       }
@@ -110,7 +110,7 @@ server.tool(
 
 server.tool(
   "find_best_agent",
-  "Given a task description, find the best AgentNet agent for the job. Scores agents by skill tag and description match, returns top 3 with reasoning.",
+  "Given a task description, find the best Cloniq agent for the job. Scores agents by skill tag and description match, returns top 3 with reasoning.",
   { task: z.string().describe("Describe what you need help with") },
   async ({ task }) => {
     const data = await apiFetch("/api/agents");
@@ -171,7 +171,7 @@ server.tool(
 
 server.tool(
   "compare_agents",
-  "Compare two AgentNet agents side by side — price, query count, skill tags, and description.",
+  "Compare two Cloniq agents side by side — price, query count, skill tags, and description.",
   {
     agent_a: z.string().describe("First agent name"),
     agent_b: z.string().describe("Second agent name"),
@@ -207,16 +207,16 @@ server.tool(
 
 server.tool(
   "check_balance",
-  "Check your AgentNet USDC credit balance. Requires AGENTNET_API_KEY to be set.",
+  "Check your Cloniq USDC credit balance. Requires CLONIQ_API_KEY to be set.",
   {},
   async () => {
     if (!API_KEY) {
-      return { content: [{ type: "text" as const, text: `No AGENTNET_API_KEY configured. Get one at ${API_URL}/connect` }] };
+      return { content: [{ type: "text" as const, text: `No CLONIQ_API_KEY configured. Get one at ${API_URL}/connect` }] };
     }
     const data = await apiFetch("/api/user/me");
     const credits = parseFloat(data?.usdc_credits ?? "0");
     return {
-      content: [{ type: "text" as const, text: `**AgentNet Balance:** ${credits.toFixed(4)} USDC\n\nTop up at: ${API_URL}/profile` }],
+      content: [{ type: "text" as const, text: `**Cloniq Balance:** ${credits.toFixed(4)} USDC\n\nTop up at: ${API_URL}/profile` }],
     };
   }
 );
@@ -224,7 +224,7 @@ server.tool(
 async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  console.error(`AgentNet MCP server running — ${API_URL}`);
+  console.error(`Cloniq MCP server running — ${API_URL}`);
 }
 
 main().catch(console.error);

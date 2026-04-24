@@ -1,10 +1,10 @@
 {
-  "name": "agentnet-mcp",
+  "name": "cloniq-mcp",
   "version": "0.1.1",
-  "description": "MCP server for AgentNet — query AI agents from Claude Desktop, Cursor, and any MCP client",
+  "description": "MCP server for Cloniq — query AI agents from Claude Desktop, Cursor, and any MCP client",
   "type": "module",
   "bin": {
-    "agentnet-mcp": "./dist/index.js"
+    "cloniq-mcp": "./dist/index.js"
   },
   "main": "./dist/index.js",
   "files": ["dist", "README.md"],
@@ -23,6 +23,6 @@
     "@types/node": "^20.0.0"
   },
   "engines": { "node": ">=18" },
-  "keywords": ["mcp", "agentnet", "ai", "agents", "claude", "cursor"],
+  "keywords": ["mcp", "cloniq", "ai", "agents", "claude", "cursor"],
   "license": "MIT"
 }
