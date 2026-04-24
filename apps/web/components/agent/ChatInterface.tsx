@@ -2,17 +2,20 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { Send, User, Bot, Sparkles, AlertCircle } from "lucide-react";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/Button";
+import { Badge } from "@/components/ui/Badge";
 import { cn } from "@/lib/utils";
 import { useFetchWithPayment } from "thirdweb/react";
 import { client } from "@/lib/thirdweb";
 
-const MOCK_MESSAGES = [
-  { id: "1", role: "assistant", content: "Hello! I am StrategyCore. How can I assist you with your DeFi strategies today?" },
-  { id: "2", role: "user", content: "What's the current outlook for ETH liquidity on Base?" },
-  { id: "3", role: "assistant", content: "Based on current on-chain data, ETH liquidity on Base has increased by 14.5% over the last 24 hours. Most of it is concentrated in Aerodrome and Uniswap v3 pools." },
-];
+// Strip markdown headers from chat messages for cleaner display
+function cleanMarkdown(text: string): string {
+  return text
+    .replace(/^#{1,6}\s+/gm, '') // Remove ### headers at start of lines
+    .replace(/\n#{1,6}\s+/g, '\n') // Remove ### headers after newlines
+    .trim();
+}
 
 export default function ChatInterface({ 
   agentId, 
@@ -30,6 +33,12 @@ export default function ChatInterface({
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to bottom when messages change
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   // useFetchWithPayment auto-intercepts 402 responses, shows the thirdweb
   // payment modal, and retries with the payment header — zero extra code needed.
@@ -102,47 +111,65 @@ export default function ChatInterface({
   };
 
   return (
-    <Card className="h-[calc(100vh-200px)] flex flex-col glass border-black/5 shadow-premium overflow-hidden">
-      {/* Chat Header */}
-      <div className="px-6 py-4 border-b border-black/5 bg-white/40 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-          <span className="text-sm font-bold tracking-tight">{agentName} Interface</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="text-[10px] uppercase font-black text-foreground/40">
-            {isFree ? "FREE" : `Cost: ${priceUsdc} USDC`}
-          </span>
+    <Card className="h-[calc(100vh-200px)] flex flex-col glass border-black/5 shadow-2xl overflow-hidden bg-gradient-to-br from-white to-gray-50/50">
+      {/* Chat Header - Bing-like */}
+      <div className="px-8 py-6 border-b border-black/5 bg-gradient-to-r from-primary/5 to-primary/10 backdrop-blur-sm">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="relative">
+              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-white shadow-lg shadow-primary/20">
+                <Bot size={20} />
+              </div>
+              <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-green-500 border-2 border-white animate-pulse" />
+            </div>
+            <div>
+              <h3 className="font-bold text-lg tracking-tight">{agentName}</h3>
+              <p className="text-xs text-foreground/50 font-medium">AI Agent • Always Online</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            {isFree ? (
+              <Badge variant="glass" className="bg-green-500/10 text-green-700 border-green-500/20">
+                FREE
+              </Badge>
+            ) : (
+              <Badge variant="glass" className="bg-primary/10 text-primary border-primary/20">
+                {priceUsdc} USDC/query
+              </Badge>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-6">
+      {/* Messages - Bing-like Design */}
+      <div className="flex-1 overflow-y-auto p-8 flex flex-col gap-8 scroll-smooth bg-gradient-to-b from-transparent to-gray-50/30">
         <AnimatePresence initial={false}>
           {messages.map((message) => (
             <motion.div
               key={message.id}
-              initial={{ opacity: 0, y: 10, scale: 0.95 }}
+              initial={{ opacity: 0, y: 10, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ duration: 0.4, ease: "easeOut" }}
+              transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
               className={cn(
-                "flex gap-4 max-w-[85%]",
-                message.role === "user" ? "ml-auto flex-row-reverse" : ""
+                "flex gap-5",
+                message.role === "user" ? "flex-row-reverse" : ""
               )}
             >
               <div className={cn(
-                "w-8 h-8 rounded-lg flex items-center justify-center shrink-0",
-                message.role === "user" ? "bg-black text-white" : "bg-primary/20 text-primary border border-primary/10"
+                "w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 shadow-md",
+                message.role === "user"
+                  ? "bg-gradient-to-br from-gray-800 to-black text-white"
+                  : "bg-gradient-to-br from-primary to-primary/80 text-white"
               )}>
-                {message.role === "user" ? <User size={14} /> : <Bot size={14} />}
+                {message.role === "user" ? <User size={18} /> : <Bot size={18} />}
               </div>
               <div className={cn(
-                "px-5 py-3 rounded-2xl text-sm leading-relaxed",
-                message.role === "user" 
-                   ? "bg-black text-white rounded-tr-none" 
-                  : "bg-white/80 border border-black/5 text-foreground/80 rounded-tl-none shadow-sm shadow-black/5"
+                "flex-1 max-w-[75%] px-6 py-4 rounded-3xl text-sm leading-relaxed shadow-sm",
+                message.role === "user"
+                  ? "bg-gradient-to-br from-gray-100 to-gray-50 text-gray-900 border border-gray-200/50"
+                  : "bg-white border border-primary/10 text-foreground/90"
               )}>
-                {message.content}
+                <p className="whitespace-pre-wrap">{cleanMarkdown(message.content)}</p>
               </div>
             </motion.div>
           ))}
@@ -150,50 +177,58 @@ export default function ChatInterface({
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="flex gap-4"
+              className="flex gap-5"
             >
-              <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
-                <Bot size={14} className="animate-spin" />
+              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-white shadow-md">
+                <Sparkles size={18} className="animate-pulse" />
               </div>
-              <div className="bg-white/80 border border-black/5 px-5 py-3 rounded-2xl rounded-tl-none italic text-xs text-foreground/40">
-                Thinking...
+              <div className="flex-1 max-w-[75%] bg-white border border-primary/10 px-6 py-4 rounded-3xl shadow-sm">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: "0ms" }} />
+                  <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: "150ms" }} />
+                  <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: "300ms" }} />
+                  <span className="ml-2 text-xs text-foreground/50 font-medium">AI is thinking...</span>
+                </div>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
+        <div ref={messagesEndRef} />
       </div>
 
-      {/* Pay-per-query indicator */}
-      <div className="px-6 py-2 bg-accent/10 flex items-center justify-center gap-2">
-        <Sparkles className="w-3 h-3 text-primary" />
-        <span className="text-[10px] font-bold text-primary tracking-widest uppercase">
-          X402 Protocol Active: {isFree ? "Sponsoring Gasless Query" : `${priceUsdc} USDC per message`}
-        </span>
-      </div>
-
-      {/* Input */}
-      <div className="p-6 bg-white/40 border-t border-black/5">
-        <div className="relative group">
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSend()}
-            disabled={isLoading || isPaymentPending}
-            placeholder={isPaymentPending ? "Awaiting payment..." : `Ask ${agentName} something...`}
-            className="w-full bg-white px-6 py-4 rounded-2xl text-sm border border-black/5 focus:outline-none focus:border-primary/30 transition-all duration-300 shadow-sm disabled:opacity-50"
-          />
-          <button
-            onClick={handleSend}
-            disabled={isLoading || isPaymentPending}
-            className="absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-xl bg-black text-white hover:bg-black/80 transition-all duration-300 active:scale-90 disabled:opacity-50"
-          >
-            <Send size={16} />
-          </button>
+      {/* Input Area - Bing-like */}
+      <div className="p-8 bg-white/80 backdrop-blur-sm border-t border-black/5">
+        <div className="relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-primary/10 rounded-3xl blur-xl opacity-50" />
+          <div className="relative">
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
+              disabled={isLoading || isPaymentPending}
+              placeholder={isPaymentPending ? "Processing payment..." : `Ask ${agentName} anything...`}
+              className="w-full bg-white px-7 py-5 pr-16 rounded-3xl text-sm border-2 border-black/10 focus:outline-none focus:border-primary/40 transition-all duration-300 shadow-lg shadow-black/5 disabled:opacity-50 font-medium placeholder:text-foreground/40"
+            />
+            <button
+              onClick={handleSend}
+              disabled={isLoading || isPaymentPending || !input.trim()}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 p-3 rounded-2xl bg-gradient-to-br from-primary to-primary/80 text-white hover:shadow-lg hover:shadow-primary/30 transition-all duration-300 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              <Send size={18} />
+            </button>
+          </div>
         </div>
-        <p className="mt-3 text-[10px] text-center text-foreground/40 font-medium">
-          Automated by AgentNet • Powered by Base
-        </p>
+        <div className="mt-4 flex items-center justify-center gap-3 text-[11px] text-foreground/40">
+          <div className="flex items-center gap-1.5">
+            <Sparkles className="w-3 h-3 text-primary" />
+            <span className="font-medium">
+              {isFree ? "Free queries powered by Cloniq" : `${priceUsdc} USDC per message via X402`}
+            </span>
+          </div>
+          <span className="text-foreground/20">•</span>
+          <span className="font-medium">Powered by Base</span>
+        </div>
       </div>
     </Card>
   );
