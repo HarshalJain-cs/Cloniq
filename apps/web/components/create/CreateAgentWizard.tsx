@@ -17,7 +17,7 @@ const STEPS = [
   { id: "identity", title: "Identity", description: "Define your agent's persona", icon: Fingerprint },
   { id: "logic", title: "Logic", description: "Configure neural parameters", icon: Brain },
   { id: "knowledge", title: "Knowledge", description: "Upload RAG datasets", icon: Database },
-  { id: "launch", title: "Launch", description: "Deploy to AgentNet", icon: Rocket },
+  { id: "launch", title: "Launch", description: "Deploy to Cloniq", icon: Rocket },
 ];
 
 function WalletGate() {
@@ -46,7 +46,7 @@ function WalletGate() {
             Connect to Deploy
           </h2>
           <p className="text-foreground/50 font-medium max-w-sm">
-            Your wallet is your identity on AgentNet. Connect once — we'll create your account automatically and link any agents you deploy to your address.
+            Your wallet is your identity on Cloniq. Connect once — we'll create your account automatically and link any agents you deploy to your address.
           </p>
         </div>
         <ConnectButton
@@ -76,6 +76,10 @@ export default function CreateAgentWizard() {
   const [error, setError] = useState<string | null>(null);
   const [tagInput, setTagInput] = useState("");
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [validationWarnings, setValidationWarnings] = useState<{
+    name?: string;
+    description?: string;
+  }>({});
 
   const [formData, setFormData] = useState({
     name: "",
@@ -90,9 +94,39 @@ export default function CreateAgentWizard() {
   const nextStep = () => currentStep < STEPS.length - 1 && setCurrentStep(currentStep + 1);
   const prevStep = () => currentStep > 0 && setCurrentStep(currentStep - 1);
 
+  const validateField = (fieldName: string, value: string) => {
+    const warnings: Record<string, string> = {};
+
+    if (fieldName === "name") {
+      if (value.length === 0) {
+        warnings.name = "Agent name is required";
+      } else if (value.length < 3) {
+        warnings.name = "Agent name must be at least 3 characters";
+      } else if (!/^[a-z0-9-]+$/.test(value)) {
+        warnings.name = "Only lowercase letters, numbers, and hyphens allowed";
+      }
+    }
+
+    if (fieldName === "description") {
+      if (value.length > 0 && value.length < 20) {
+        warnings.description = "Description should be at least 20 characters for better clarity";
+      }
+    }
+
+    return warnings;
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+
+    // Real-time validation
+    const fieldWarnings = validateField(name, value);
+    setValidationWarnings(prev => ({
+      ...prev,
+      ...fieldWarnings,
+      ...(Object.keys(fieldWarnings).length === 0 ? { [name]: undefined } : {})
+    }));
   };
 
   const handleToggleFree = () => {
@@ -201,15 +235,27 @@ export default function CreateAgentWizard() {
                   <div className="grid grid-cols-1 gap-6">
                     <div className="flex flex-col gap-2">
                       <label className="text-[10px] uppercase font-bold tracking-widest text-foreground/40">Agent Handle (Unique)</label>
-                      <input 
+                      <input
                         name="name"
-                        type="text" 
+                        type="text"
                         value={formData.name}
                         onChange={handleChange}
                         placeholder="e.g. strategy-core"
-                        className="bg-white/50 border border-black/5 px-4 py-3 rounded-xl text-sm focus:outline-none focus:border-primary/30 transition-all font-medium"
+                        className={cn(
+                          "bg-white/50 border px-4 py-3 rounded-xl text-sm focus:outline-none transition-all font-medium",
+                          validationWarnings.name
+                            ? "border-amber-400 focus:border-amber-500"
+                            : "border-black/5 focus:border-primary/30"
+                        )}
                       />
-                      <p className="text-[10px] text-foreground/40">Lowercase, alphanumeric and hyphens only.</p>
+                      {validationWarnings.name ? (
+                        <div className="flex items-center gap-1.5 text-amber-600">
+                          <AlertCircle size={12} />
+                          <p className="text-[10px] font-medium">{validationWarnings.name}</p>
+                        </div>
+                      ) : (
+                        <p className="text-[10px] text-foreground/40">Lowercase, alphanumeric and hyphens only.</p>
+                      )}
                     </div>
                     <div className="flex flex-col gap-2">
                       <label className="text-[10px] uppercase font-bold tracking-widest text-foreground/40">ENS / Basename (Optional)</label>
@@ -235,8 +281,19 @@ export default function CreateAgentWizard() {
                         onChange={handleChange}
                         placeholder="An agent specialized in DeFi strategy and risk assessment..."
                         rows={3}
-                        className="bg-white/50 border border-black/5 px-4 py-3 rounded-xl text-sm focus:outline-none focus:border-primary/30 transition-all font-medium resize-none"
+                        className={cn(
+                          "bg-white/50 border px-4 py-3 rounded-xl text-sm focus:outline-none transition-all font-medium resize-none",
+                          validationWarnings.description
+                            ? "border-amber-400 focus:border-amber-500"
+                            : "border-black/5 focus:border-primary/30"
+                        )}
                       />
+                      {validationWarnings.description && (
+                        <div className="flex items-center gap-1.5 text-amber-600">
+                          <AlertCircle size={12} />
+                          <p className="text-[10px] font-medium">{validationWarnings.description}</p>
+                        </div>
+                      )}
                     </div>
 
                     <div className="flex flex-col gap-2">
@@ -286,7 +343,7 @@ export default function CreateAgentWizard() {
                       </div>
                       <div className="flex-1">
                         <h4 className="font-bold text-sm mb-1">Model: Llama 3.3 70B</h4>
-                        <p className="text-[11px] text-foreground/50">High performance, fine-tuned for AgentNet.</p>
+                        <p className="text-[11px] text-foreground/50">High performance, fine-tuned for Cloniq.</p>
                       </div>
                       <Badge variant="glass">DEFAULT</Badge>
                     </div>
@@ -453,10 +510,13 @@ export default function CreateAgentWizard() {
                 )}
               </Button>
             ) : (
-              <Button 
+              <Button
                 onClick={nextStep}
                 className="px-10"
-                disabled={currentStep === 0 && (!formData.name || formData.name.length < 3)}
+                disabled={
+                  currentStep === 0 &&
+                  (!formData.name || formData.name.length < 3 || !!validationWarnings.name)
+                }
               >
                 Continue
                 <ArrowRight className="w-4 h-4 ml-2" />
