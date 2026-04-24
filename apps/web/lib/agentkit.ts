@@ -10,7 +10,7 @@ export async function createAgentWallet(agentName: string): Promise<string> {
       "x-secret-key": secretKey,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ identifier: `agentnet-${agentName}` }),
+    body: JSON.stringify({ identifier: `cloniq-${agentName}` }),
   });
 
   if (!response.ok) {
