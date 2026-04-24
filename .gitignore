@@ -55,3 +55,6 @@ QUICKREF.md
 observer-log/
 ultimate-pitch.md
 docs/
+*.md
+*plan*
+.claude/
