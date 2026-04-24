@@ -261,6 +261,7 @@ export default function UserProfile() {
       {showTopup && wallet && (
         <TopupModal
           walletAddress={wallet}
+          currentBalance={credits}
           onClose={() => setShowTopup(false)}
           onSuccess={(newBalance) => { setCredits(newBalance); setShowTopup(false); }}
         />

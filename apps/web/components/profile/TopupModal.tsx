@@ -15,11 +15,12 @@ declare global {
 
 interface TopupModalProps {
   walletAddress: string;
+  currentBalance?: number;
   onClose: () => void;
   onSuccess: (newBalance: number) => void;
 }
 
-export default function TopupModal({ walletAddress, onClose, onSuccess }: TopupModalProps) {
+export default function TopupModal({ walletAddress, currentBalance = 0, onClose, onSuccess }: TopupModalProps) {
   const [amountInr, setAmountInr] = useState(85);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState<string | null>(null);
@@ -147,7 +148,13 @@ export default function TopupModal({ walletAddress, onClose, onSuccess }: TopupM
           ) : (
             <>
               <h3 className="font-outfit font-black text-2xl mb-1">Add Credits</h3>
-              <p className="text-foreground/50 text-sm mb-6">Pay with UPI, card, or netbanking</p>
+              <p className="text-foreground/50 text-sm mb-3">Pay with UPI, card, or netbanking</p>
+
+              {/* Current Balance */}
+              <div className="bg-gradient-to-r from-primary/5 to-primary/10 rounded-2xl p-4 mb-6">
+                <p className="text-[10px] uppercase font-bold tracking-widest text-foreground/40 mb-1">Current Wallet Balance</p>
+                <p className="font-outfit font-black text-2xl text-primary">{currentBalance.toFixed(4)} <span className="text-foreground/40 text-sm font-normal">USDC</span></p>
+              </div>
 
               {/* Preset amounts */}
               <div className="grid grid-cols-4 gap-2 mb-6">
@@ -206,7 +213,7 @@ export default function TopupModal({ walletAddress, onClose, onSuccess }: TopupM
                 Pay ₹{amountInr} via Razorpay
               </Button>
               <p className="text-center text-[10px] text-foreground/30 mt-3">
-                Powered by Razorpay · <span className="text-orange-500 font-bold">TEST MODE</span> (Use test UPI/cards)
+                Powered by Razorpay
               </p>
             </>
           )}
