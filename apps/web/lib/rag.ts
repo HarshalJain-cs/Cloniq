@@ -32,7 +32,8 @@ export async function runAgentQuery(
     agentName: string,
     agentDescription: string,
     question: string,
-    personality?: PersonalityProfile | null
+    personality?: PersonalityProfile | null,
+    llmModel: string = "llama-3.3-70b-versatile"
 ): Promise<string> {
     const supabase = getSupabase();
     const embedding = await getEmbedding(question);
@@ -53,7 +54,7 @@ export async function runAgentQuery(
         ? generatePersonalityPrompt(agentName, agentDescription, personality, context)
         : generateBasicPersonalityPrompt(agentName, agentDescription, context);
 
-    return getChatCompletion(systemPrompt, question);
+    return getChatCompletion(systemPrompt, question, llmModel);
 }
 
 export async function streamAgentQuery(
@@ -61,7 +62,8 @@ export async function streamAgentQuery(
     agentName: string,
     agentDescription: string,
     question: string,
-    personality?: PersonalityProfile | null
+    personality?: PersonalityProfile | null,
+    llmModel: string = "llama-3.3-70b-versatile"
 ): Promise<ReadableStream<string>> {
     const supabase = getSupabase();
     const embedding = await getEmbedding(question);
@@ -82,7 +84,7 @@ export async function streamAgentQuery(
         ? generatePersonalityPrompt(agentName, agentDescription, personality, context)
         : generateBasicPersonalityPrompt(agentName, agentDescription, context);
 
-    return getChatCompletionStream(systemPrompt, question);
+    return getChatCompletionStream(systemPrompt, question, llmModel);
 }
 
 export async function seedAgentMemory(

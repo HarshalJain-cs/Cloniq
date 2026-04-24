@@ -90,6 +90,7 @@ export default function CreateAgentWizard() {
     priceUsdc: 0,
     isInitiallyFree: true,
     initialMemory: "",
+    llmModel: "llama-3.3-70b-versatile", // Default Groq model
   });
 
   const nextStep = () => currentStep < STEPS.length - 1 && setCurrentStep(currentStep + 1);
@@ -338,15 +339,25 @@ export default function CreateAgentWizard() {
                   </div>
 
                   <div className="grid grid-cols-1 gap-6">
-                    <div className="flex items-start gap-4 p-4 rounded-2xl bg-black/[0.02] border border-black/5">
-                      <div className="w-10 h-10 rounded-lg bg-white shadow-sm flex items-center justify-center">
-                        <Cpu size={20} />
+                    <div className="flex flex-col gap-3">
+                      <label className="text-[10px] uppercase font-bold tracking-widest text-foreground/40">Language Model</label>
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-white shadow-sm flex items-center justify-center shrink-0">
+                          <Cpu size={20} className="text-primary" />
+                        </div>
+                        <select
+                          value={formData.llmModel}
+                          onChange={(e) => setFormData(prev => ({ ...prev, llmModel: e.target.value }))}
+                          className="flex-1 bg-white border border-black/10 px-4 py-3 rounded-xl text-sm font-medium focus:outline-none focus:border-primary/30 transition-all cursor-pointer"
+                        >
+                          <option value="llama-3.3-70b-versatile">Llama 3.3 70B Versatile (Recommended)</option>
+                          <option value="llama-3.1-70b-versatile">Llama 3.1 70B Versatile</option>
+                          <option value="llama-3.1-8b-instant">Llama 3.1 8B Instant (Fast)</option>
+                          <option value="mixtral-8x7b-32768">Mixtral 8x7B (32k context)</option>
+                          <option value="gemma2-9b-it">Gemma 2 9B IT</option>
+                        </select>
                       </div>
-                      <div className="flex-1">
-                        <h4 className="font-bold text-sm mb-1">Model: Llama 3.3 70B</h4>
-                        <p className="text-[11px] text-foreground/50">High performance, fine-tuned for Cloniq.</p>
-                      </div>
-                      <Badge variant="glass">DEFAULT</Badge>
+                      <p className="text-[10px] text-foreground/40">Different models offer trade-offs between speed, cost, and capability.</p>
                     </div>
 
                     <div 

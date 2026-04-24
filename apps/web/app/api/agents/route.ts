@@ -119,6 +119,7 @@ export async function POST(request: NextRequest) {
       initialMemory,
       ensName,
       ownerWallet,
+      llmModel,
     } = body;
 
     if (!isNonEmptyString(name)) {
@@ -194,6 +195,18 @@ export async function POST(request: NextRequest) {
         )
       : [];
 
+    // Validate and set LLM model
+    const ALLOWED_MODELS = [
+      "llama-3.3-70b-versatile",
+      "llama-3.1-70b-versatile",
+      "llama-3.1-8b-instant",
+      "mixtral-8x7b-32768",
+      "gemma2-9b-it",
+    ];
+    const selectedModel = typeof llmModel === "string" && ALLOWED_MODELS.includes(llmModel)
+      ? llmModel
+      : "llama-3.3-70b-versatile";
+
     const { data: agent, error: insertError } = await supabase
       .from("agents")
       .insert({
@@ -208,6 +221,7 @@ export async function POST(request: NextRequest) {
         ens_name: typeof ensName === "string" ? ensName.trim() : null,
         endpoint_url: `/api/agents/${normalizedName}/ask`,
         status: "active",
+        llm_model: selectedModel,
       })
       .select()
       .single();
