@@ -17,6 +17,7 @@ export default function BusinessRegisterPage() {
   const account = useActiveAccount();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const [formData, setFormData] = useState({
     businessName: "",
@@ -41,12 +42,52 @@ export default function BusinessRegisterPage() {
     });
   };
 
+  const validateForm = () => {
+    const errors: Record<string, string> = {};
+
+    // Business Name validation
+    if (!formData.businessName.trim()) {
+      errors.businessName = "Business name is required";
+    } else if (formData.businessName.length < 2) {
+      errors.businessName = "Business name must be at least 2 characters";
+    }
+
+    // Business Slug validation
+    if (!formData.businessSlug.trim()) {
+      errors.businessSlug = "Business URL is required";
+    } else if (!/^[a-z0-9-]+$/.test(formData.businessSlug)) {
+      errors.businessSlug = "Only lowercase letters, numbers, and hyphens allowed";
+    }
+
+    // Email validation
+    if (!formData.businessEmail.trim()) {
+      errors.businessEmail = "Business email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.businessEmail)) {
+      errors.businessEmail = "Please enter a valid email address";
+    }
+
+    // Website validation (optional but must be valid if provided)
+    if (formData.websiteUrl && !/^https?:\/\/.+/.test(formData.websiteUrl)) {
+      errors.websiteUrl = "Please enter a valid URL (e.g., https://example.com)";
+    }
+
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!account?.address) return;
 
+    // Validate form
+    if (!validateForm()) {
+      setError("Please fix the errors above");
+      return;
+    }
+
     setIsSubmitting(true);
     setError(null);
+    setFieldErrors({});
 
     try {
       const response = await fetch("/api/business/register", {
@@ -114,8 +155,13 @@ export default function BusinessRegisterPage() {
                   onChange={handleChange}
                   required
                   placeholder="Acme Corporation"
-                  className="w-full bg-white/50 border border-black/10 px-4 py-3 rounded-xl focus:outline-none focus:border-primary/30"
+                  className={`w-full bg-white/50 border ${
+                    fieldErrors.businessName ? 'border-red-500' : 'border-black/10'
+                  } px-4 py-3 rounded-xl focus:outline-none focus:border-primary/30`}
                 />
+                {fieldErrors.businessName && (
+                  <p className="text-red-500 text-xs font-medium mt-1">{fieldErrors.businessName}</p>
+                )}
               </div>
 
               {/* Business Slug */}
@@ -130,9 +176,14 @@ export default function BusinessRegisterPage() {
                     required
                     pattern="[a-z0-9-]+"
                     placeholder="acme-corp"
-                    className="flex-1 bg-white/50 border border-black/10 px-4 py-3 rounded-xl focus:outline-none focus:border-primary/30"
+                    className={`flex-1 bg-white/50 border ${
+                      fieldErrors.businessSlug ? 'border-red-500' : 'border-black/10'
+                    } px-4 py-3 rounded-xl focus:outline-none focus:border-primary/30`}
                   />
                 </div>
+                {fieldErrors.businessSlug && (
+                  <p className="text-red-500 text-xs font-medium mt-1">{fieldErrors.businessSlug}</p>
+                )}
               </div>
 
               {/* Email */}
@@ -145,8 +196,13 @@ export default function BusinessRegisterPage() {
                   onChange={handleChange}
                   required
                   placeholder="contact@acme.com"
-                  className="w-full bg-white/50 border border-black/10 px-4 py-3 rounded-xl focus:outline-none focus:border-primary/30"
+                  className={`w-full bg-white/50 border ${
+                    fieldErrors.businessEmail ? 'border-red-500' : 'border-black/10'
+                  } px-4 py-3 rounded-xl focus:outline-none focus:border-primary/30`}
                 />
+                {fieldErrors.businessEmail && (
+                  <p className="text-red-500 text-xs font-medium mt-1">{fieldErrors.businessEmail}</p>
+                )}
               </div>
 
               {/* Type & Size */}
@@ -202,8 +258,13 @@ export default function BusinessRegisterPage() {
                     value={formData.websiteUrl}
                     onChange={handleChange}
                     placeholder="https://acme.com"
-                    className="w-full bg-white/50 border border-black/10 px-4 py-3 rounded-xl focus:outline-none focus:border-primary/30"
+                    className={`w-full bg-white/50 border ${
+                      fieldErrors.websiteUrl ? 'border-red-500' : 'border-black/10'
+                    } px-4 py-3 rounded-xl focus:outline-none focus:border-primary/30`}
                   />
+                  {fieldErrors.websiteUrl && (
+                    <p className="text-red-500 text-xs font-medium mt-1">{fieldErrors.websiteUrl}</p>
+                  )}
                 </div>
               </div>
 
