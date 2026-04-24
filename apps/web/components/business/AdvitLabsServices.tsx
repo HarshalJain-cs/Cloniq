@@ -42,7 +42,7 @@ const services: Service[] = [
   {
     id: "conversational-ai",
     name: "Conversational AI Studio",
-    description: "Outbound Sales Representative powered by ElevenLabs. Ultra-realistic voice AI for lead qualification and sales conversations.",
+    description: "Outbound Sales Representative with ultra-realistic voice AI. Natural conversations for lead qualification and sales automation.",
     icon: Mic,
     gradient: "from-purple-500 via-pink-500 to-rose-500",
     features: [

@@ -26,9 +26,9 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-// ElevenLabs Agent Configuration
-const ELEVENLABS_AGENT_ID = "agent_8701kq0tt9n2e3ws82wj83y3smfg";
-const ELEVENLABS_AGENT_NAME = "Outbound Sales Representative";
+// Voice AI Agent Configuration
+const VOICE_AGENT_ID = "agent_8701kq0tt9n2e3ws82wj83y3smfg";
+const VOICE_AGENT_NAME = "Outbound Sales Representative";
 
 const sampleVoices = [
   { id: "21m00Tcm4TlvDq8ikWAM", name: "Rachel - Calm & Professional" },
@@ -45,7 +45,7 @@ const integrationMethods = [
     name: "React SDK",
     icon: Code,
     description: "Full-featured React component with WebRTC streaming",
-    code: `import { useConversation } from "@elevenlabs/react";
+    code: `import { useConversation } from "@advit/voice-ai";
 
 function Agent() {
   const conversation = useConversation({
@@ -58,7 +58,7 @@ function Agent() {
   const startConversation = async () => {
     await navigator.mediaDevices.getUserMedia({ audio: true });
     await conversation.startSession({
-      agentId: "${ELEVENLABS_AGENT_ID}",
+      agentId: "${VOICE_AGENT_ID}",
       connectionType: "webrtc", // or "websocket"
     });
   };
@@ -78,13 +78,13 @@ function Agent() {
     name: "React Native",
     icon: Smartphone,
     description: "Native mobile integration for iOS & Android",
-    code: `import { ElevenLabsProvider, useConversation } from "@elevenlabs/react-native";
+    code: `import { VoiceAIProvider, useConversation } from "@advit/voice-ai-native";
 
 function App() {
   return (
-    <ElevenLabsProvider>
+    <VoiceAIProvider>
       <ConversationScreen />
-    </ElevenLabsProvider>
+    </VoiceAIProvider>
   );
 }
 
@@ -97,7 +97,7 @@ function ConversationScreen() {
 
   const start = async () => {
     await conversation.startSession({
-      agentId: "${ELEVENLABS_AGENT_ID}"
+      agentId: "${VOICE_AGENT_ID}"
     });
   };
 
@@ -117,10 +117,10 @@ function ConversationScreen() {
     name: "Embeddable Widget",
     icon: Globe,
     description: "Drop-in widget for any website",
-    code: `<elevenlabs-convai agent-id="${ELEVENLABS_AGENT_ID}"></elevenlabs-convai>
+    code: `<advit-voice-ai agent-id="${VOICE_AGENT_ID}"></advit-voice-ai>
 
 <script
-  src="https://elevenlabs.io/convai-widget/index.js"
+  src="https://cdn.advitlabs.ai/voice-widget/v1/index.js"
   async
   type="text/javascript">
 </script>`,
@@ -131,17 +131,15 @@ function ConversationScreen() {
     icon: Code,
     description: "Server-side Python integration",
     code: `import os
-from elevenlabs.client import ElevenLabs
-from elevenlabs.conversational_ai.conversation import Conversation
-from elevenlabs.conversational_ai.default_audio_interface import DefaultAudioInterface
+from advit.voice_ai import VoiceAIClient, Conversation, AudioInterface
 
-client = ElevenLabs(api_key=os.getenv("ELEVENLABS_API_KEY"))
+client = VoiceAIClient(api_key=os.getenv("ADVIT_API_KEY"))
 
 conversation = Conversation(
     client,
-    agent_id="${ELEVENLABS_AGENT_ID}",
+    agent_id="${VOICE_AGENT_ID}",
     requires_auth=False,
-    audio_interface=DefaultAudioInterface(),
+    audio_interface=AudioInterface(),
     callback_agent_response=lambda response: print(f"Agent: {response}"),
     callback_user_transcript=lambda transcript: print(f"User: {transcript}"),
 )
@@ -156,7 +154,7 @@ print(f"Conversation ID: {conversation_id}")`,
     icon: Code,
     description: "Direct WebSocket connection for custom implementations",
     code: `const ws = new WebSocket(
-  "wss://api.elevenlabs.io/v1/convai/conversation?agent_id=${ELEVENLABS_AGENT_ID}"
+  "wss://api.advitlabs.ai/v1/voice/conversation?agent_id=${VOICE_AGENT_ID}"
 );
 
 ws.onopen = () => {
@@ -240,7 +238,7 @@ export default function ConversationalAIStudio() {
                   Live
                 </Badge>
               </div>
-              <p className="text-foreground/60">Powered by ElevenLabs - {ELEVENLABS_AGENT_NAME}</p>
+              <p className="text-foreground/60">{VOICE_AGENT_NAME} - Ultra-realistic voice AI</p>
             </div>
           </div>
         </div>
@@ -334,7 +332,7 @@ export default function ConversationalAIStudio() {
                     <div className="text-sm">
                       <p className="font-medium text-blue-400 mb-1">Pro Tip</p>
                       <p className="text-foreground/70">
-                        This is a live connection to ElevenLabs conversational AI. The agent will respond
+                        This is a live connection to ADVIT's conversational AI platform. The agent will respond
                         with ultra-realistic voice and can handle interruptions naturally.
                       </p>
                     </div>
@@ -447,7 +445,7 @@ export default function ConversationalAIStudio() {
                   <div>
                     <div className="text-foreground/60 mb-1">Agent ID</div>
                     <div className="font-mono text-xs bg-background/50 p-2 rounded border border-white/10 break-all">
-                      {ELEVENLABS_AGENT_ID}
+                      {VOICE_AGENT_ID}
                     </div>
                   </div>
 
@@ -490,7 +488,7 @@ export default function ConversationalAIStudio() {
                   variant="outline"
                   className="w-full mt-4"
                   onClick={() =>
-                    window.open("https://elevenlabs.io/docs/conversational-ai", "_blank")
+                    window.open("https://docs.advitlabs.ai/voice-ai", "_blank")
                   }
                 >
                   <ExternalLink className="w-4 h-4 mr-2" />
