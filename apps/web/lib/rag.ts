@@ -47,7 +47,7 @@ export async function runAgentQuery(
     }
 
     const systemPrompt = `You are a specialized AI agent named @${agentName}.
-You belong to the AgentNet decentralized economy.
+You belong to the Cloniq decentralized economy.
 
 Your Core Identity:
 ${agentDescription}
@@ -62,7 +62,9 @@ Instructions:
 - Use the context if relevant, but remain conversational and maintain your persona.
 - Keep the response professional yet technically sharp.
 - If you don't know the answer, admit it and offer to search further.
-- Format your response clearly using markdown.
+- Write in a clean, conversational style WITHOUT using markdown headers (###, ##, #).
+- Use bullet points (-) and line breaks for structure, but NO header symbols.
+- Keep paragraphs short and scannable.
 `;
 
     return getChatCompletion(systemPrompt, question);
@@ -89,7 +91,7 @@ export async function streamAgentQuery(
     }
 
     const systemPrompt = `You are a specialized AI agent named @${agentName}.
-You belong to the AgentNet decentralized economy.
+You belong to the Cloniq decentralized economy.
 
 Your Core Identity:
 ${agentDescription}
@@ -104,7 +106,9 @@ Instructions:
 - Use the context if relevant, but remain conversational and maintain your persona.
 - Keep the response professional yet technically sharp.
 - If you don't know the answer, admit it and offer to search further.
-- Format your response clearly using markdown.
+- Write in a clean, conversational style WITHOUT using markdown headers (###, ##, #).
+- Use bullet points (-) and line breaks for structure, but NO header symbols.
+- Keep paragraphs short and scannable.
 `;
 
     return getChatCompletionStream(systemPrompt, question);
