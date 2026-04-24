@@ -162,21 +162,71 @@ export default function TopupModal({ walletAddress, currentBalance = 0, onClose,
                 <p className="font-outfit font-black text-2xl text-primary">{currentBalance.toFixed(4)} <span className="text-foreground/40 text-sm font-normal">USDC</span></p>
               </div>
 
-              {/* UPI ID Input */}
-              <div className="mb-6">
-                <label className="text-[10px] uppercase font-bold tracking-widest text-foreground/40 mb-2 block">
-                  UPI ID (for payment)
-                </label>
-                <input
-                  type="text"
-                  value={upiId}
-                  onChange={(e) => setUpiId(e.target.value)}
-                  placeholder="yourname@paytm"
-                  className="w-full px-4 py-3 rounded-xl border border-black/10 text-sm font-medium focus:outline-none focus:border-primary/30 transition-all font-mono"
-                />
-                <p className="text-[10px] text-foreground/40 mt-1.5">
-                  Test mode: use <code className="bg-black/5 px-1.5 py-0.5 rounded font-mono">success@razorpay</code> for successful payment
-                </p>
+              {/* UPI Payment Section */}
+              <div className="mb-6 p-5 border-2 border-primary/20 rounded-2xl bg-gradient-to-br from-primary/5 to-primary/10">
+                <div className="flex items-center gap-2 mb-4">
+                  <svg className="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+                    <path d="M12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z"/>
+                  </svg>
+                  <h4 className="font-bold text-sm uppercase tracking-wide">UPI Payment</h4>
+                </div>
+
+                {/* UPI ID Input */}
+                <div className="mb-4">
+                  <label className="text-[10px] uppercase font-bold tracking-widest text-foreground/60 mb-2 block">
+                    Enter Your UPI ID
+                  </label>
+                  <input
+                    type="text"
+                    value={upiId}
+                    onChange={(e) => setUpiId(e.target.value)}
+                    placeholder="yourname@paytm"
+                    className="w-full px-4 py-3 rounded-xl border-2 border-primary/30 bg-white text-sm font-medium focus:outline-none focus:border-primary transition-all font-mono"
+                  />
+                  <p className="text-[10px] text-foreground/50 mt-1.5">
+                    Test: <code className="bg-black/10 px-1.5 py-0.5 rounded font-mono font-bold">success@razorpay</code>
+                  </p>
+                </div>
+
+                {/* UPI App Icons */}
+                <div>
+                  <p className="text-[10px] uppercase font-bold tracking-widest text-foreground/60 mb-3">
+                    Scan QR or Pay with
+                  </p>
+                  <div className="flex items-center gap-3 flex-wrap">
+                    <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white rounded-lg border border-black/10">
+                      <div className="w-5 h-5 rounded bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white text-[10px] font-bold">
+                        Ph
+                      </div>
+                      <span className="text-xs font-medium">PhonePe</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white rounded-lg border border-black/10">
+                      <div className="w-5 h-5 rounded bg-gradient-to-br from-green-500 to-blue-500 flex items-center justify-center text-white text-[10px] font-bold">
+                        GP
+                      </div>
+                      <span className="text-xs font-medium">Google Pay</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white rounded-lg border border-black/10">
+                      <div className="w-5 h-5 rounded bg-gradient-to-br from-orange-500 to-pink-500 flex items-center justify-center text-white text-[10px] font-bold">
+                        CR
+                      </div>
+                      <span className="text-xs font-medium">CRED</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white rounded-lg border border-black/10">
+                      <div className="w-5 h-5 rounded bg-gradient-to-br from-orange-400 to-yellow-500 flex items-center justify-center text-white text-[10px] font-bold">
+                        Az
+                      </div>
+                      <span className="text-xs font-medium">Amazon</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white rounded-lg border border-black/10">
+                      <div className="w-5 h-5 rounded bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-white text-[10px] font-bold">
+                        PT
+                      </div>
+                      <span className="text-xs font-medium">Paytm</span>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               {/* Preset amounts */}
