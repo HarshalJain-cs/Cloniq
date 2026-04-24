@@ -174,7 +174,8 @@ export default function BusinessRegisterPage() {
                     value={formData.businessSlug}
                     onChange={handleChange}
                     required
-                    pattern="[a-z0-9-]+"
+                    pattern="[a-z0-9\-]+"
+                    title="Only lowercase letters, numbers, and hyphens allowed"
                     placeholder="acme-corp"
                     className={`flex-1 bg-white/50 border ${
                       fieldErrors.businessSlug ? 'border-red-500' : 'border-black/10'
