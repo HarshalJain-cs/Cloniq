@@ -62,6 +62,35 @@ export default function TopupModal({ walletAddress, onClose, onSuccess }: TopupM
           description: `Add ${amountUsdc} USDC credits`,
           order_id: order.order_id,
           theme: { color: "#000000" },
+          // Explicitly enable UPI and other payment methods
+          config: {
+            display: {
+              blocks: {
+                upi: {
+                  name: "UPI",
+                  instruments: [
+                    { method: "upi" }
+                  ]
+                },
+                card: {
+                  name: "Card",
+                  instruments: [
+                    { method: "card" }
+                  ]
+                },
+                netbanking: {
+                  name: "Netbanking",
+                  instruments: [
+                    { method: "netbanking" }
+                  ]
+                }
+              },
+              sequence: ["block.upi", "block.card", "block.netbanking"],
+              preferences: {
+                show_default_blocks: true
+              }
+            }
+          },
           handler: async (response: any) => {
             // 3. Verify payment
             const verifyRes = await fetch("/api/topup/verify", {
@@ -177,7 +206,7 @@ export default function TopupModal({ walletAddress, onClose, onSuccess }: TopupM
                 Pay ₹{amountInr} via Razorpay
               </Button>
               <p className="text-center text-[10px] text-foreground/30 mt-3">
-                Powered by Razorpay · Test mode
+                Powered by Razorpay · <span className="text-orange-500 font-bold">TEST MODE</span> (Use test UPI/cards)
               </p>
             </>
           )}
