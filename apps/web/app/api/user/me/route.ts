@@ -5,7 +5,7 @@ import { verifyApiKey } from "@/lib/api-keys";
 export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
-  const key = request.headers.get("X-AgentNet-Key");
+  const key = request.headers.get("X-Cloniq-Key");
   if (!key) return NextResponse.json({ error: "API key required" }, { status: 401 });
 
   const user = await verifyApiKey(key);
