@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, User, Bot, Sparkles, AlertCircle } from "lucide-react";
+import { Send, User, Bot, Sparkles, AlertCircle, DollarSign, X, ExternalLink, CheckCircle, Loader2 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
@@ -17,24 +17,84 @@ function cleanMarkdown(text: string): string {
     .trim();
 }
 
-export default function ChatInterface({ 
-  agentId, 
+export default function ChatInterface({
+  agentId,
   agentName,
   priceUsdc,
-  isFree 
-}: { 
-  agentId: string; 
+  isFree
+}: {
+  agentId: string;
   agentName: string;
   priceUsdc?: number;
   isFree?: boolean;
 }) {
   const [messages, setMessages] = useState<{ id: string; role: string; content: string }[]>([
-    { id: "1", role: "assistant", content: `Hello! I am ${agentName}. How can I assist you today?` }
+    { id: "1", role: "assistant", content: `Hello! I am ${agentName}. ${
+      agentName === 'yield-aggregator'
+        ? 'I can help you invest in DeFi yields. Try asking: "I want to deposit $10 into highest yield"'
+        : agentName === 'options-trader'
+        ? 'I can help you trade options. Try asking: "I want to buy ETH call option with $20"'
+        : 'How can I assist you today?'
+    }` }
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showDepositModal, setShowDepositModal] = useState(false);
+  const [depositAmount, setDepositAmount] = useState(10);
+  const [isExecutingTrade, setIsExecutingTrade] = useState(false);
+  const [tradeResult, setTradeResult] = useState<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const account = useActiveAccount();
+
+  const handleDeposit = async () => {
+    if (!account?.address) {
+      alert("Please connect your wallet first!");
+      return;
+    }
+
+    setIsExecutingTrade(true);
+    try {
+      const response = await fetch(`/api/agents/${agentName}/deposit`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amount: depositAmount,
+          userWallet: account.address,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "Deposit failed");
+      }
+
+      setTradeResult(result);
+
+      // Add success message to chat
+      const successMsg = {
+        id: Date.now().toString(),
+        role: "assistant",
+        content: `✅ SUCCESS! I've invested $${depositAmount} USDC for you!\n\n` +
+          `Protocol: ${result.protocol}\n` +
+          `Transaction: ${result.transactions?.deposit}\n` +
+          `View on explorer: ${result.explorer}\n\n` +
+          `Your funds are now earning ~${result.estimatedAPY} APY!`,
+      };
+      setMessages(prev => [...prev, successMsg]);
+
+    } catch (error: any) {
+      setTradeResult({ error: error.message });
+      const errorMsg = {
+        id: Date.now().toString(),
+        role: "assistant",
+        content: `❌ Error: ${error.message}. Please try again or contact support.`,
+      };
+      setMessages(prev => [...prev, errorMsg]);
+    } finally {
+      setIsExecutingTrade(false);
+    }
+  };
 
   // Auto-scroll to bottom when messages change
   useEffect(() => {
@@ -72,10 +132,26 @@ export default function ChatInterface({
     }
   };
 
+  // Detect if message is asking to deposit/trade
+  const isDepositIntent = (msg: string) => {
+    const lower = msg.toLowerCase();
+    return lower.includes("deposit") || lower.includes("invest") || lower.includes("buy") ||
+           lower.includes("trade") || lower.includes("$") || lower.includes("usd");
+  };
+
   const handleSend = async () => {
     if (!input.trim() || isLoading || isPaymentPending) return;
 
     const userMessage = { id: Date.now().toString(), role: "user", content: input };
+
+    // Check if trading agent and user wants to deposit/trade
+    if ((agentName === 'yield-aggregator' || agentName === 'options-trader') && isDepositIntent(input)) {
+      setMessages(prev => [...prev, userMessage]);
+      setInput("");
+      setShowDepositModal(true);
+      return;
+    }
+
     const assistantId = (Date.now() + 1).toString();
     setMessages(prev => [...prev, userMessage, { id: assistantId, role: "assistant", content: "" }]);
     setInput("");
@@ -240,6 +316,130 @@ export default function ChatInterface({
           <span className="font-medium">Powered by Base</span>
         </div>
       </div>
+
+      {/* Deposit Modal */}
+      {showDepositModal && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => !isExecutingTrade && setShowDepositModal(false)} />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="relative bg-white rounded-3xl shadow-2xl w-full max-w-md p-8 z-10"
+          >
+            {!tradeResult ? (
+              <>
+                <button
+                  onClick={() => setShowDepositModal(false)}
+                  className="absolute top-5 right-5 text-foreground/30 hover:text-foreground/60"
+                  disabled={isExecutingTrade}
+                >
+                  <X className="w-5 h-5" />
+                </button>
+
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                    <DollarSign className="w-6 h-6 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-xl">Deposit Funds</h3>
+                    <p className="text-sm text-foreground/60">How much do you want to invest?</p>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-xs font-bold text-foreground/70 mb-2 block">
+                      Amount (USDC)
+                    </label>
+                    <input
+                      type="number"
+                      value={depositAmount}
+                      onChange={(e) => setDepositAmount(Number(e.target.value))}
+                      min={1}
+                      step={1}
+                      className="w-full px-4 py-3 rounded-xl border-2 border-primary/20 text-lg font-bold focus:outline-none focus:border-primary/40"
+                      disabled={isExecutingTrade}
+                    />
+                  </div>
+
+                  <div className="p-4 bg-primary/5 rounded-xl">
+                    <p className="text-xs text-foreground/60">
+                      💡 <strong>Testnet Mode:</strong> This will execute on Base Sepolia testnet. No real money!
+                    </p>
+                  </div>
+
+                  <Button
+                    onClick={handleDeposit}
+                    disabled={isExecutingTrade || depositAmount <= 0}
+                    className="w-full py-6 text-base font-bold"
+                  >
+                    {isExecutingTrade ? (
+                      <>
+                        <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                        Executing Trade...
+                      </>
+                    ) : (
+                      <>
+                        <DollarSign className="w-5 h-5 mr-2" />
+                        Deposit ${depositAmount} USDC
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <div className="text-center py-4">
+                {tradeResult.error ? (
+                  <>
+                    <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+                    <h3 className="font-bold text-xl mb-2">Transaction Failed</h3>
+                    <p className="text-sm text-red-600 mb-4">{tradeResult.error}</p>
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
+                    <h3 className="font-bold text-xl mb-2">Trade Executed!</h3>
+                    <p className="text-sm text-foreground/60 mb-4">
+                      Successfully invested ${tradeResult.amount} USDC
+                    </p>
+                    <div className="space-y-2 text-left bg-gray-50 rounded-xl p-4 mb-4">
+                      <div className="flex justify-between text-xs">
+                        <span className="text-foreground/60">Protocol:</span>
+                        <span className="font-bold">{tradeResult.protocol}</span>
+                      </div>
+                      <div className="flex justify-between text-xs">
+                        <span className="text-foreground/60">APY:</span>
+                        <span className="font-bold text-green-600">{tradeResult.estimatedAPY}</span>
+                      </div>
+                      <div className="flex justify-between text-xs">
+                        <span className="text-foreground/60">Network:</span>
+                        <span className="font-bold">{tradeResult.chain}</span>
+                      </div>
+                    </div>
+                    <a
+                      href={tradeResult.explorer}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 text-sm text-primary hover:underline mb-4"
+                    >
+                      View on Explorer <ExternalLink className="w-4 h-4" />
+                    </a>
+                  </>
+                )}
+                <Button
+                  onClick={() => {
+                    setShowDepositModal(false);
+                    setTradeResult(null);
+                  }}
+                  className="w-full mt-4"
+                >
+                  Close
+                </Button>
+              </div>
+            )}
+          </motion.div>
+        </div>
+      )}
     </Card>
   );
 }
