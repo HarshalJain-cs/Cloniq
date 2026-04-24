@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Building2, Users, Bot, TrendingUp, Plus } from "lucide-react";
 import Link from "next/link";
+import AdvitLabsServices from "@/components/business/AdvitLabsServices";
 
 export default function BusinessDashboard() {
   const params = useParams();
@@ -73,7 +74,7 @@ export default function BusinessDashboard() {
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
           <Card className="glass shadow-premium border-black/5">
             <CardContent className="p-8">
               <h2 className="font-bold text-2xl mb-4">Business Agents</h2>
@@ -102,6 +103,9 @@ export default function BusinessDashboard() {
             </CardContent>
           </Card>
         </div>
+
+        {/* ADVIT AI Labs Services */}
+        <AdvitLabsServices />
       </div>
     </div>
   );
