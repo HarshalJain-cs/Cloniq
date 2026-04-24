@@ -10,8 +10,9 @@ import { baseSepolia } from "thirdweb/chains";
 import { inAppWallet, createWallet } from "thirdweb/wallets";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
-import { Brain, Cpu, Database, Fingerprint, Rocket, ArrowRight, ArrowLeft, Loader2, Globe, Plus, X, Upload, FileText, Wallet } from "lucide-react";
+import { Brain, Cpu, Database, Fingerprint, Rocket, ArrowRight, ArrowLeft, Loader2, Globe, Plus, X, Upload, FileText, Wallet, AlertCircle } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
+import { cn } from "@/lib/utils";
 
 const STEPS = [
   { id: "identity", title: "Identity", description: "Define your agent's persona", icon: Fingerprint },
