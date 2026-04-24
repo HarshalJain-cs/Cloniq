@@ -61,7 +61,7 @@ export function getAskRoutePriceConfig(
     network: X402_DEFAULT_NETWORK,
     payTo,
     config: {
-      description: "Paid AgentNet query",
+      description: "Paid Cloniq query",
       facilitatorUrl,
     },
   };
