@@ -22,6 +22,7 @@ interface TopupModalProps {
 
 export default function TopupModal({ walletAddress, currentBalance = 0, onClose, onSuccess }: TopupModalProps) {
   const [amountInr, setAmountInr] = useState(85);
+  const [upiId, setUpiId] = useState("success@razorpay"); // Test UPI ID
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -63,6 +64,11 @@ export default function TopupModal({ walletAddress, currentBalance = 0, onClose,
           description: `Add ${amountUsdc} USDC credits`,
           order_id: order.order_id,
           theme: { color: "#000000" },
+          // Prefill UPI ID
+          prefill: {
+            method: "upi",
+            "vpa": upiId, // UPI ID from input
+          },
           // Explicitly enable UPI and other payment methods
           config: {
             display: {
@@ -154,6 +160,23 @@ export default function TopupModal({ walletAddress, currentBalance = 0, onClose,
               <div className="bg-gradient-to-r from-primary/5 to-primary/10 rounded-2xl p-4 mb-6">
                 <p className="text-[10px] uppercase font-bold tracking-widest text-foreground/40 mb-1">Current Wallet Balance</p>
                 <p className="font-outfit font-black text-2xl text-primary">{currentBalance.toFixed(4)} <span className="text-foreground/40 text-sm font-normal">USDC</span></p>
+              </div>
+
+              {/* UPI ID Input */}
+              <div className="mb-6">
+                <label className="text-[10px] uppercase font-bold tracking-widest text-foreground/40 mb-2 block">
+                  UPI ID (for payment)
+                </label>
+                <input
+                  type="text"
+                  value={upiId}
+                  onChange={(e) => setUpiId(e.target.value)}
+                  placeholder="yourname@paytm"
+                  className="w-full px-4 py-3 rounded-xl border border-black/10 text-sm font-medium focus:outline-none focus:border-primary/30 transition-all font-mono"
+                />
+                <p className="text-[10px] text-foreground/40 mt-1.5">
+                  Test mode: use <code className="bg-black/5 px-1.5 py-0.5 rounded font-mono">success@razorpay</code> for successful payment
+                </p>
               </div>
 
               {/* Preset amounts */}
