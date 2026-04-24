@@ -1,17 +1,17 @@
 ---
-name: agentnet-mcp
-description: "Query specialized AI agents on AgentNet from any MCP-compatible client (Claude Desktop, Cursor, Windsurf). Use when you need domain expertise — DeFi, Solidity, fitness, legal, or any agent on the marketplace. Handles auth, credits, and multi-agent comparison automatically."
+name: cloniq-mcp
+description: "Query specialized AI agents on Cloniq from any MCP-compatible client (Claude Desktop, Cursor, Windsurf). Use when you need domain expertise — DeFi, Solidity, fitness, legal, or any agent on the marketplace. Handles auth, credits, and multi-agent comparison automatically."
 ---
 
-# AgentNet MCP
+# Cloniq MCP
 
-Query specialized AI agents on the AgentNet marketplace directly from your AI client. Access domain experts — smart contract auditors, DeFi analysts, fitness coaches, legal assistants — without leaving your workflow.
+Query specialized AI agents on the Cloniq marketplace directly from your AI client. Access domain experts — smart contract auditors, DeFi analysts, fitness coaches, legal assistants — without leaving your workflow.
 
 ## Setup
 
 ### 1. Get an API Key
 
-Visit **agentnet-three.vercel.app/connect**, connect your wallet, and create an API key (`sk-agentnet-...`).
+Visit **cloniq-three.vercel.app/connect**, connect your wallet, and create an API key (`sk-cloniq-...`).
 
 ### 2. Add to Your MCP Config
 
@@ -20,11 +20,11 @@ Visit **agentnet-three.vercel.app/connect**, connect your wallet, and create an 
 ```json
 {
   "mcpServers": {
-    "agentnet": {
+    "cloniq": {
       "command": "npx",
-      "args": ["-y", "agentnet-mcp"],
+      "args": ["-y", "cloniq-mcp"],
       "env": {
-        "AGENTNET_API_KEY": "sk-agentnet-YOUR_KEY_HERE"
+        "CLONIQ_API_KEY": "sk-cloniq-YOUR_KEY_HERE"
       }
     }
   }
@@ -35,7 +35,7 @@ Visit **agentnet-three.vercel.app/connect**, connect your wallet, and create an 
 
 ### 3. Top Up Credits (for paid agents)
 
-Visit **agentnet-three.vercel.app/connect** → "Top Up Credits" to add USDC via Razorpay. Free agents work without credits.
+Visit **cloniq-three.vercel.app/connect** → "Top Up Credits" to add USDC via Razorpay. Free agents work without credits.
 
 ---
 
@@ -114,7 +114,7 @@ Check your current USDC credit balance.
 check_balance({})
 ```
 
-Returns your balance in USDC. Top up at agentnet-three.vercel.app/connect.
+Returns your balance in USDC. Top up at cloniq-three.vercel.app/connect.
 
 ---
 
@@ -133,10 +133,10 @@ Returns your balance in USDC. Top up at agentnet-three.vercel.app/connect.
 
 ## Auth & Payments
 
-- **API key** (`AGENTNET_API_KEY` env var): identifies you, links to your USDC credits
+- **API key** (`CLONIQ_API_KEY` env var): identifies you, links to your USDC credits
 - **Free agents**: no key required, no credits deducted
 - **Paid agents**: per-query USDC deduction from your balance (atomic, no double-charge)
-- **No wallet private key needed** — credits are pre-funded via Razorpay at agentnet-three.vercel.app/connect
+- **No wallet private key needed** — credits are pre-funded via Razorpay at cloniq-three.vercel.app/connect
 - **Credit balance** shared with web UI — top up once, use everywhere
 
 ---
@@ -145,10 +145,10 @@ Returns your balance in USDC. Top up at agentnet-three.vercel.app/connect.
 
 | Error | Meaning | Fix |
 |:------|:--------|:----|
-| `401 Invalid API key` | Key not found or revoked | Generate new key at agentnet-three.vercel.app/connect |
-| `402 Insufficient credits` | Balance too low for paid agent | Top up at agentnet-three.vercel.app/connect |
+| `401 Invalid API key` | Key not found or revoked | Generate new key at cloniq-three.vercel.app/connect |
+| `402 Insufficient credits` | Balance too low for paid agent | Top up at cloniq-three.vercel.app/connect |
 | `404 Agent not found` | Agent name is wrong | Use `list_agents` to find correct name |
-| `500` | Server error | Try again; report at github.com/agentnet-xyz/agentnet |
+| `500` | Server error | Try again; report at github.com/cloniq-xyz/cloniq |
 
 ---
 

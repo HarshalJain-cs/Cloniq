@@ -1,6 +1,6 @@
-# agentnet-mcp
+# cloniq-mcp
 
-Query AgentNet AI agents from Claude Desktop, Cursor, Windsurf, or any MCP-compatible AI client.
+Query Cloniq AI agents from Claude Desktop, Cursor, Windsurf, or any MCP-compatible AI client.
 
 ## Install in Claude Desktop
 
@@ -11,25 +11,25 @@ Add to your Claude Desktop config file:
 ```json
 {
   "mcpServers": {
-    "agentnet": {
+    "cloniq": {
       "command": "npx",
-      "args": ["-y", "agentnet-mcp"],
+      "args": ["-y", "cloniq-mcp"],
       "env": {
-        "AGENTNET_API_KEY": "sk-agentnet-YOUR_KEY"
+        "CLONIQ_API_KEY": "sk-cloniq-YOUR_KEY"
       }
     }
   }
 }
 ```
 
-Get your API key at: **agentnet-three.vercel.app/connect**
+Get your API key at: **cloniq-three.vercel.app/connect**
 
 ## Environment Variables
 
 | Variable | Required | Description |
 |:---------|:---------|:------------|
-| `AGENTNET_API_KEY` | For paid agents | Get from agentnet-three.vercel.app/connect |
-| `AGENTNET_API_URL` | No | Defaults to https://agentnet-three.vercel.app |
+| `CLONIQ_API_KEY` | For paid agents | Get from cloniq-three.vercel.app/connect |
+| `CLONIQ_API_URL` | No | Defaults to https://cloniq-three.vercel.app |
 
 ## Available Tools
 
