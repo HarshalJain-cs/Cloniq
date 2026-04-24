@@ -1,18 +1,18 @@
 <div align="center">
 
 ```
- █████╗  ██████╗ ███████╗███╗   ██╗████████╗███╗   ██╗███████╗████████╗
-██╔══██╗██╔════╝ ██╔════╝████╗  ██║╚══██╔══╝████╗  ██║██╔════╝╚══██╔══╝
-███████║██║  ███╗█████╗  ██╔██╗ ██║   ██║   ██╔██╗ ██║█████╗     ██║
-██╔══██║██║   ██║██╔══╝  ██║╚██╗██║   ██║   ██║╚██╗██║██╔══╝     ██║
-██║  ██║╚██████╔╝███████╗██║ ╚████║   ██║   ██║ ╚████║███████╗   ██║
-╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚═╝  ╚═══╝╚══════╝   ╚═╝
+ ██████╗██╗      ██████╗ ███╗   ██╗██╗ ██████╗
+██╔════╝██║     ██╔═══██╗████╗  ██║██║██╔═══██╗
+██║     ██║     ██║   ██║██╔██╗ ██║██║██║   ██║
+██║     ██║     ██║   ██║██║╚██╗██║██║██║▄▄ ██║
+╚██████╗███████╗╚██████╔╝██║ ╚████║██║╚██████╔╝
+ ╚═════╝╚══════╝ ╚═════╝ ╚═╝  ╚═══╝╚═╝ ╚══▀▀═╝
 ```
 
 **The Global Standard for Autonomous Intelligence.**
 
-[![Live](https://img.shields.io/badge/LIVE-agentnet--three.vercel.app-000000?style=for-the-badge&logoColor=white)](https://agentnet-three.vercel.app)
-[![MCP](https://img.shields.io/badge/MCP-agentnet--mcp_on_npm-CB3837?style=for-the-badge&logo=npm&logoColor=white)](https://www.npmjs.com/package/agentnet-mcp)
+[![Live](https://img.shields.io/badge/LIVE-cloniq.vercel.app-000000?style=for-the-badge&logoColor=white)](https://agentnet.vercel.app)
+[![MCP](https://img.shields.io/badge/MCP-cloniq--mcp_on_npm-CB3837?style=for-the-badge&logo=npm&logoColor=white)](https://www.npmjs.com/package/cloniq-mcp)
 [![Contract](https://img.shields.io/badge/Base_Sepolia-AgentRegistry.sol-0052FF?style=for-the-badge&logo=coinbase&logoColor=white)](https://sepolia.basescan.org/address/0x3e277fb14ce6e1f4da5391cce381869282fd46b5)
 [![LLM](https://img.shields.io/badge/Groq-Llama_3.3_70B-8B5CF6?style=for-the-badge&logoColor=white)](https://groq.com)
 
@@ -20,11 +20,11 @@
 
 ---
 
-## What Is AgentNet?
+## What Is Cloniq?
 
 > You have expertise. The world wants it. But you can only be in one place at a time.
 
-**AgentNet turns your knowledge into an AI agent that works 24/7, earns for you while you sleep, and can be queried from anywhere — the web, WhatsApp, Claude Desktop, or any AI client.**
+**Cloniq turns your knowledge into an AI agent that works 24/7, earns for you while you sleep, and can be queried from anywhere — the web, WhatsApp, Claude Desktop, or any AI client.**
 
 Think of it as:
 - **Fiverr** — but your AI does the work, not you
@@ -42,7 +42,7 @@ Queries start at **$0.01**. Zero platform cut on free agents.
 
 ## See It In Action
 
-**🌐 Web App** → [agentnet-three.vercel.app](https://agentnet-three.vercel.app)
+**🌐 Web App** → [agentnet.vercel.app](https://agentnet.vercel.app)
 
 **💬 WhatsApp** → Text any agent directly. No app needed.
 
@@ -51,23 +51,23 @@ Queries start at **$0.01**. Zero platform cut on free agents.
 ```json
 {
   "mcpServers": {
-    "agentnet": {
+    "cloniq": {
       "command": "npx",
-      "args": ["-y", "agentnet-mcp"],
+      "args": ["-y", "cloniq-mcp"],
       "env": {
-        "AGENTNET_API_KEY": "sk-agentnet-YOUR_KEY",
-        "AGENTNET_API_URL": "https://agentnet-three.vercel.app"
+        "CLONIQ_API_KEY": "sk-cloniq-YOUR_KEY",
+        "CLONIQ_API_URL": "https://agentnet.vercel.app"
       }
     }
   }
 }
 ```
 
-Get your key at: [agentnet-three.vercel.app/connect](https://agentnet-three.vercel.app/connect)
+Get your key at: [agentnet.vercel.app/connect](https://agentnet.vercel.app/connect)
 
 ---
 
-## Two Sides of AgentNet
+## Two Sides of Cloniq
 
 <table>
 <tr>
@@ -108,9 +108,9 @@ Get your key at: [agentnet-three.vercel.app/connect](https://agentnet-three.verc
 
 ```bash
 # Try it right now
-curl -X POST https://agentnet-three.vercel.app/api/agents/hitesh/ask \
+curl -X POST https://agentnet.vercel.app/api/agents/hitesh/ask \
   -H "Content-Type: application/json" \
-  -H "X-AgentNet-Key: sk-agentnet-YOUR_KEY" \
+  -H "X-Cloniq-Key: sk-cloniq-YOUR_KEY" \
   -d '{"question":"how do I survive in web3?"}'
 ```
 
@@ -126,7 +126,7 @@ curl -X POST https://agentnet-three.vercel.app/api/agents/hitesh/ask \
   User (web / WhatsApp / MCP / ChatGPT Action)
         │
         ▼
-  ┌─────────────┐     API Key (sk-agentnet-...)
+  ┌─────────────┐     API Key (sk-cloniq-...)
   │  Auth Gate  │  ─────────────────────────────── MCP / Programmatic
   │             │     x402 USDC payment             Web queries
   └──────┬──────┘
@@ -157,7 +157,7 @@ curl -X POST https://agentnet-three.vercel.app/api/agents/hitesh/ask \
 ## Architecture
 
 ```
-agentnet/
+cloniq/
 ├── apps/
 │   └── web/                        # Next.js 15 app (deployed on Vercel)
 │       ├── app/
@@ -174,7 +174,7 @@ agentnet/
 │       │   ├── profile/            # Creator dashboard
 │       │   └── connect/            # API key + MCP setup
 │       ├── components/
-│       │   ├── home/               # Hero, Features, WhyAgentNet, HowItWorks
+│       │   ├── home/               # Hero, Features, WhyCloniq, HowItWorks
 │       │   ├── layout/             # Header, LoadingScreen
 │       │   └── ui/                 # Globe, sliders, cards
 │       └── lib/
@@ -183,7 +183,7 @@ agentnet/
 │           └── supabase.ts         # DB client
 │
 ├── packages/
-│   └── mcp-server/                 # agentnet-mcp on npm
+│   └── mcp-server/                 # cloniq-mcp on npm
 │       ├── src/index.ts            # 7 MCP tools (stdio transport)
 │       └── SKILL.md                # AI agent instructions
 │
@@ -217,7 +217,7 @@ agentnet/
 Install once, use from any AI client:
 
 ```bash
-npx agentnet-mcp  # or add to claude_desktop_config.json
+npx cloniq-mcp  # or add to claude_desktop_config.json
 ```
 
 | Tool | What It Does |
@@ -247,11 +247,11 @@ POST   /api/agents/:name/memory       Seed agent memory manually
 # Users
 GET    /api/user                      Get user by wallet address
 POST   /api/user                      Create / upsert user
-GET    /api/user/me                   Get current user via X-AgentNet-Key
+GET    /api/user/me                   Get current user via X-Cloniq-Key
 
 # API Keys
 GET    /api/keys?wallet=0x...         List keys for wallet
-POST   /api/keys                      Create key → returns sk-agentnet-...
+POST   /api/keys                      Create key → returns sk-cloniq-...
 DELETE /api/keys?id=...&wallet=0x...  Revoke key
 
 # Payments
@@ -272,7 +272,7 @@ GET    /api/x402/session-token        x402 payment session config
 agents              -- profiles, wallet, price, skill tags, query count
 agent_memories      -- pgvector 384-dim embeddings of uploaded knowledge
 users               -- wallet address, USDC credit balance
-api_keys            -- sk-agentnet-... keys, usage tracking, wallet link
+api_keys            -- sk-cloniq-... keys, usage tracking, wallet link
 topup_transactions  -- Razorpay order history (INR → USDC)
 whatsapp_sessions   -- per-number conversation state
 
@@ -287,8 +287,8 @@ deduct_usdc_credits(wallet, amount)           -- atomic credit deduction
 ## Quick Start
 
 ```bash
-git clone https://github.com/vyqno/vyqno-agentic-marketplace.git
-cd vyqno-agentic-marketplace
+git clone https://github.com/yourusername/cloniq.git
+cd cloniq
 pnpm install
 
 cp .env.example apps/web/.env.local
@@ -326,8 +326,8 @@ HF_TOKEN                     # Optional — enables RAG (free at huggingface.co)
 - [x] Document upload → agent knowledge seeding
 - [x] Streaming SSE responses (`/ask/stream`)
 - [x] WhatsApp bot via Twilio — text any agent
-- [x] MCP server (`agentnet-mcp`) — published on npm
-- [x] API key auth (`sk-agentnet-...`) with credit deduction
+- [x] MCP server (`cloniq-mcp`) — published on npm
+- [x] API key auth (`sk-cloniq-...`) with credit deduction
 - [x] OpenAPI 3.0 spec — ChatGPT Actions compatible
 - [x] Full marketplace UI with search, filter, sort by popularity
 - [x] Creator profile — earnings, query stats, agent management
@@ -339,9 +339,9 @@ HF_TOKEN                     # Optional — enables RAG (free at huggingface.co)
 
 ## What's Next
 
-- [ ] Chrome Extension — AgentNet sidebar on any webpage
+- [ ] Chrome Extension — Cloniq sidebar on any webpage
 - [ ] Agent-to-Agent (A2A) — agents paying each other autonomously
-- [ ] Custom domain for agents (yourname.agentnet.xyz)
+- [ ] Custom domain for agents (yourname.cloniq.xyz)
 - [ ] Personal data sources — Obsidian, browser history, social graph
 
 ---
@@ -351,8 +351,8 @@ HF_TOKEN                     # Optional — enables RAG (free at huggingface.co)
 **Built on Base · Powered by Groq · Deployed on Vercel**
 
 [![Base](https://img.shields.io/badge/Built_on-Base-0052FF?style=for-the-badge&logo=coinbase&logoColor=white)](https://base.org)
-[![Live](https://img.shields.io/badge/Live_Demo-Visit_Now-000000?style=for-the-badge&logoColor=white)](https://agentnet-three.vercel.app)
-[![npm](https://img.shields.io/badge/MCP_Package-npm-CB3837?style=for-the-badge&logo=npm&logoColor=white)](https://www.npmjs.com/package/agentnet-mcp)
+[![Live](https://img.shields.io/badge/Live_Demo-Visit_Now-000000?style=for-the-badge&logoColor=white)](https://agentnet.vercel.app)
+[![npm](https://img.shields.io/badge/MCP_Package-npm-CB3837?style=for-the-badge&logo=npm&logoColor=white)](https://www.npmjs.com/package/cloniq-mcp)
 
 *Your knowledge. Working 24/7. Even when you're sleeping.*
 
