@@ -32,23 +32,21 @@ export default async function AgentPage({ params }: { params: Promise<{ id: stri
   };
 
   return (
-    <div className="pt-32 pb-20 px-6 max-w-7xl mx-auto">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-        {/* Left Column: Details */}
-        <div className="lg:col-span-5 flex flex-col gap-8">
+    <div className="fixed inset-0 pt-24">
+      <div className="h-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-0">
+        {/* Left Column: Agent Details - Separate Scrolling */}
+        <div className="lg:col-span-5 h-full overflow-y-auto overscroll-contain px-6 py-8 border-r border-black/5">
           <AgentProfileDetails agent={mappedAgent} />
         </div>
 
-        {/* Right Column: Chat */}
-        <div className="lg:col-span-7">
-          <div className="sticky top-32">
-             <ChatInterface 
-                agentId={mappedAgent.id} 
-                agentName={mappedAgent.name}
-                priceUsdc={mappedAgent.priceUsdc}
-                isFree={mappedAgent.isFree}
-              />
-          </div>
+        {/* Right Column: Chat - Separate Scrolling */}
+        <div className="lg:col-span-7 h-full flex flex-col px-6 py-8">
+          <ChatInterface
+            agentId={mappedAgent.id}
+            agentName={mappedAgent.name}
+            priceUsdc={mappedAgent.priceUsdc}
+            isFree={mappedAgent.isFree}
+          />
         </div>
       </div>
     </div>
