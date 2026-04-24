@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════
-//  AgentNet Contract Addresses — Base Sepolia
+//  Cloniq Contract Addresses — Base Sepolia
 // ═══════════════════════════════════════════════════════════════
 
 export const AGENT_REGISTRY_ADDRESS =
