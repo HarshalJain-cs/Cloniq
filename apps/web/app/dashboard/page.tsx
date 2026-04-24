@@ -28,6 +28,7 @@ export default function DashboardPage() {
     thisMonth: 0,
   });
   const [recentChats, setRecentChats] = useState<any[]>([]);
+  const [expandedChat, setExpandedChat] = useState<string | null>(null);
 
   useEffect(() => {
     if (!account?.address) return;
@@ -203,37 +204,65 @@ export default function DashboardPage() {
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.3 + index * 0.1 }}
-                      className="p-6 hover:bg-black/[0.02] transition-colors cursor-pointer group"
+                      className="hover:bg-black/[0.02] transition-colors"
                     >
-                      <div className="flex items-start gap-4">
-                        <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-white shrink-0">
-                          <Bot size={18} />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-2">
-                            <h4 className="font-bold text-sm">@{chat.agentName}</h4>
-                            <Badge variant="glass" className="text-[10px]">
-                              {chat.cost === 0 ? "FREE" : `$${chat.cost.toFixed(2)}`}
-                            </Badge>
+                      <div
+                        className="p-6 cursor-pointer group"
+                        onClick={() => setExpandedChat(expandedChat === chat.id ? null : chat.id)}
+                      >
+                        <div className="flex items-start gap-4">
+                          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-white shrink-0">
+                            <Bot size={18} />
                           </div>
-                          <p className="text-sm text-foreground/70 mb-2 truncate">
-                            {chat.message}
-                          </p>
-                          <div className="flex items-center gap-2 text-xs text-foreground/40">
-                            <Clock size={12} />
-                            <span>{formatTimestamp(chat.timestamp)}</span>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-2">
+                              <h4 className="font-bold text-sm">@{chat.agentName}</h4>
+                              <Badge variant="glass" className="text-[10px]">
+                                {chat.cost === 0 ? "FREE" : `$${chat.cost.toFixed(2)}`}
+                              </Badge>
+                            </div>
+                            <p className="text-sm text-foreground/70 mb-2 line-clamp-2">
+                              Q: {chat.message}
+                            </p>
+                            <div className="flex items-center gap-2 text-xs text-foreground/40">
+                              <Clock size={12} />
+                              <span>{formatTimestamp(chat.timestamp)}</span>
+                            </div>
                           </div>
+                          <Link href={`/agent/${chat.agentId}`} onClick={(e) => e.stopPropagation()}>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                              Chat Again
+                            </Button>
+                          </Link>
                         </div>
-                        <Link href={`/agent/${chat.agentName}`}>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="opacity-0 group-hover:opacity-100 transition-opacity"
-                          >
-                            Continue
-                          </Button>
-                        </Link>
                       </div>
+
+                      {/* Expanded conversation */}
+                      {expandedChat === chat.id && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="px-6 pb-6 border-t border-black/5"
+                        >
+                          <div className="pt-4 space-y-4">
+                            <div className="bg-gray-50 rounded-xl p-4">
+                              <p className="text-xs font-bold text-foreground/60 mb-2">Question:</p>
+                              <p className="text-sm text-foreground/90">{chat.message}</p>
+                            </div>
+                            {chat.answer && (
+                              <div className="bg-primary/5 rounded-xl p-4 border border-primary/10">
+                                <p className="text-xs font-bold text-primary mb-2">Answer:</p>
+                                <p className="text-sm text-foreground/90 whitespace-pre-wrap">{chat.answer}</p>
+                              </div>
+                            )}
+                          </div>
+                        </motion.div>
+                      )}
                     </motion.div>
                   ))}
                 </div>

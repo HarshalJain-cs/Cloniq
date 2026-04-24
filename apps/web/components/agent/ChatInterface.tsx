@@ -121,7 +121,7 @@ export default function ChatInterface({
   };
 
   return (
-    <Card className="h-[calc(100vh-200px)] flex flex-col glass border-black/5 shadow-2xl overflow-hidden bg-gradient-to-br from-white to-gray-50/50">
+    <Card className="h-[700px] lg:h-[calc(100vh-150px)] flex flex-col glass border-black/5 shadow-2xl overflow-hidden bg-gradient-to-br from-white to-gray-50/50">
       {/* Chat Header - Bing-like */}
       <div className="px-8 py-6 border-b border-black/5 bg-gradient-to-r from-primary/5 to-primary/10 backdrop-blur-sm">
         <div className="flex items-center justify-between">
@@ -152,7 +152,7 @@ export default function ChatInterface({
       </div>
 
       {/* Messages - Bing-like Design */}
-      <div className="flex-1 overflow-y-auto p-8 flex flex-col gap-8 scroll-smooth bg-gradient-to-b from-transparent to-gray-50/30">
+      <div className="flex-1 overflow-y-auto overscroll-contain p-8 flex flex-col gap-8 scroll-smooth bg-gradient-to-b from-transparent to-gray-50/30">
         <AnimatePresence initial={false}>
           {messages.map((message) => (
             <motion.div
