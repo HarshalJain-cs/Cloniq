@@ -3,6 +3,7 @@
 import AgentGrid from "@/components/home/AgentGrid";
 import { Search } from "lucide-react";
 import { useState } from "react";
+import Link from "next/link";
 
 export default function BrowsePage() {
   const [searchQuery, setSearchQuery] = useState("");

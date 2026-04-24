@@ -13,6 +13,7 @@ const BASE_NAV = [
   { href: "/", label: "Marketplace" },
   { href: "/browse", label: "Browse" },
   { href: "/create", label: "Deploy Agent" },
+  { href: "/business/register", label: "Business" },
   { href: "/connect", label: "Connect" },
 ];
 
