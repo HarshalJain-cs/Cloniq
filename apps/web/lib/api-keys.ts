@@ -1,12 +1,11 @@
 import { createServiceRoleClient } from "@/lib/supabase";
+import crypto from "crypto";
 
 export function generateKey(): string {
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  let result = "sk-cloniq-";
-  for (let i = 0; i < 32; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return result;
+  // Use cryptographically secure random bytes
+  const randomBytes = crypto.randomBytes(32);
+  const key = randomBytes.toString("base64url"); // URL-safe base64
+  return `sk-cloniq-${key}`;
 }
 
 export async function verifyApiKey(
