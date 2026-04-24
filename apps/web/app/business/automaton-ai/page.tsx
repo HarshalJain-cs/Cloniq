@@ -212,11 +212,11 @@ export default function AutomatonAILanding() {
                 size="lg"
                 variant="outline"
                 className="crisp-border font-bold"
-                asChild
+                data-cal-link="automaton-ai/30min"
+                data-cal-namespace="30min"
+                data-cal-config='{"layout":"month_view"}'
               >
-                <Link href="/contact">
-                  Contact Sales
-                </Link>
+                Schedule Demo
               </Button>
             </div>
           </div>
@@ -381,6 +381,9 @@ variant={service.status === "live" ? "default" : "outline"}
                   <Button
                     size="lg"
                     className="bg-accent text-white hover:bg-accent/90 font-bold shadow-premium"
+                    data-cal-link="automaton-ai/30min"
+                    data-cal-namespace="30min"
+                    data-cal-config='{"layout":"month_view"}'
                   >
                     Schedule Demo
                     <ArrowRight className="ml-2 w-5 h-5" />
@@ -389,8 +392,11 @@ variant={service.status === "live" ? "default" : "outline"}
                     size="lg"
                     variant="outline"
                     className="crisp-border font-bold"
+                    asChild
                   >
-                    View Documentation
+                    <Link href="https://docs.advitlabs.ai">
+                      View Documentation
+                    </Link>
                   </Button>
                 </div>
               </div>
