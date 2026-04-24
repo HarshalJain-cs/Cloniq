@@ -10,15 +10,21 @@ import { createWallet } from "thirdweb/wallets";
 import { ethereum, base } from "thirdweb/chains";
 import { z } from "zod";
 
-// Initialize thirdweb client
-const client = createThirdwebClient({
-  secretKey: process.env.THIRDWEB_SECRET_KEY!,
-});
+// Lazy initialization - only create when route is called
+function getClient() {
+  if (!process.env.THIRDWEB_SECRET_KEY) {
+    throw new Error("THIRDWEB_SECRET_KEY not configured");
+  }
+  return createThirdwebClient({
+    secretKey: process.env.THIRDWEB_SECRET_KEY,
+  });
+}
 
-// Create agent's server wallet (deterministic)
-const agentWallet = createWallet("inApp", {
-  partnerId: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID,
-});
+function getAgentWallet() {
+  return createWallet("inApp", {
+    partnerId: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID,
+  });
+}
 
 // Trade request schema
 const TradeRequestSchema = z.object({
@@ -89,7 +95,7 @@ export async function POST(req: NextRequest) {
     }
 
     const contract = getContract({
-      client,
+      client: getClient(),
       chain: selectedChain,
       address: marketAddress,
       abi: LYRA_OPTION_MARKET_ABI,
@@ -141,7 +147,7 @@ export async function POST(req: NextRequest) {
     // Send transaction
     const result = await sendTransaction({
       transaction,
-      account: agentWallet,
+      account: getAgentWallet(),
     });
 
     return NextResponse.json({

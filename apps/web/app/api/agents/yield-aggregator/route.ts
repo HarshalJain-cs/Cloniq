@@ -10,15 +10,21 @@ import { createWallet } from "thirdweb/wallets";
 import { base, ethereum } from "thirdweb/chains";
 import { z } from "zod";
 
-// Initialize thirdweb client
-const client = createThirdwebClient({
-  secretKey: process.env.THIRDWEB_SECRET_KEY!,
-});
+// Lazy initialization - only create when route is called
+function getClient() {
+  if (!process.env.THIRDWEB_SECRET_KEY) {
+    throw new Error("THIRDWEB_SECRET_KEY not configured");
+  }
+  return createThirdwebClient({
+    secretKey: process.env.THIRDWEB_SECRET_KEY,
+  });
+}
 
-// Agent's server wallet
-const agentWallet = createWallet("inApp", {
-  partnerId: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID,
-});
+function getAgentWallet() {
+  return createWallet("inApp", {
+    partnerId: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID,
+  });
+}
 
 // Investment request schema
 const InvestmentRequestSchema = z.object({
@@ -111,7 +117,7 @@ async function getYields(token: string, chain: string): Promise<YieldOption[]> {
   if (chain === "base") {
     try {
       const aavePool = getContract({
-        client,
+        client: getClient(),
         chain: selectedChain,
         address: CONTRACTS.base.AAVE_POOL,
         abi: AAVE_POOL_ABI,
@@ -185,7 +191,7 @@ export async function POST(req: NextRequest) {
 
     // Approve token
     const tokenContract = getContract({
-      client,
+      client: getClient(),
       chain: selectedChain,
       address: tokenAddress,
       abi: ERC20_ABI,
@@ -201,26 +207,27 @@ export async function POST(req: NextRequest) {
 
     await sendTransaction({
       transaction: approveTx,
-      account: agentWallet,
+      account: getAgentWallet(),
     });
 
     // Deposit to protocol
     const poolContract = getContract({
-      client,
+      client: getClient(),
       chain: selectedChain,
       address: selectedYield.contractAddress,
       abi: AAVE_POOL_ABI,
     });
 
+    const wallet = getAgentWallet();
     const depositTx = prepareContractCall({
       contract: poolContract,
       method: "supply",
-      params: [tokenAddress, amountWei, await agentWallet.getAddress(), 0],
+      params: [tokenAddress, amountWei, await wallet.getAddress(), 0],
     });
 
     const result = await sendTransaction({
       transaction: depositTx,
-      account: agentWallet,
+      account: wallet,
     });
 
     return NextResponse.json({
