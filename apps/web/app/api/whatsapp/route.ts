@@ -29,7 +29,7 @@ function formatAgentList(agents: any[]): string {
 }
 
 const MENU_MSG = (agents: any[]) =>
-  `🤖 *Welcome to AgentNet*\n\nHire AI experts, pay per answer.\n\n*Available Agents:*\n${formatAgentList(agents)}\n\nReply with agent name or number to start chatting.\nType *menu* anytime to go back.`;
+  `🤖 *Welcome to Cloniq*\n\nHire AI experts, pay per answer.\n\n*Available Agents:*\n${formatAgentList(agents)}\n\nReply with agent name or number to start chatting.\nType *menu* anytime to go back.`;
 
 export async function POST(request: NextRequest) {
   // Twilio sends form-encoded body
@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
   // --- HELP ---
   if (lowerBody === "help") {
     return twiml(
-      `📖 *AgentNet Commands*\n\n*menu* — Show available agents\n*back* — Return to menu\n*help* — Show this message\n\nOr just type the agent name/number to chat with it.`
+      `📖 *Cloniq Commands*\n\n*menu* — Show available agents\n*back* — Return to menu\n*help* — Show this message\n\nOr just type the agent name/number to chat with it.`
     );
   }
 
