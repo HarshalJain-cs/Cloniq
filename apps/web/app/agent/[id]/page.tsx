@@ -32,28 +32,43 @@ export default async function AgentPage({ params }: { params: Promise<{ id: stri
   };
 
   return (
-    <div className="min-h-screen pt-24 pb-8">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 px-6">
-        {/* Left Column: Agent Details - Separate Scrolling */}
-        <div className="lg:col-span-5">
-          <div className="lg:sticky lg:top-24 lg:h-[calc(100vh-8rem)] lg:overflow-y-auto lg:overscroll-contain pr-2" style={{
-            scrollbarWidth: 'thin',
-            scrollbarColor: '#cbd5e1 transparent'
-          }}>
-            <AgentProfileDetails agent={mappedAgent} />
+    <>
+      <style jsx global>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: rgba(0, 0, 0, 0.1);
+          border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: rgba(0, 0, 0, 0.2);
+        }
+      `}</style>
+
+      <div className="h-screen flex flex-col pt-20 overflow-hidden bg-gray-50/30">
+        <div className="flex-1 flex gap-0 overflow-hidden">
+          {/* Left Side: Agent Details - Fixed Width with Independent Scroll */}
+          <div className="w-full lg:w-[380px] xl:w-[420px] border-r border-black/10 bg-white overflow-y-auto overflow-x-hidden custom-scrollbar">
+            <div className="p-6">
+              <AgentProfileDetails agent={mappedAgent} />
+            </div>
+          </div>
+
+          {/* Right Side: Full Chat Interface - Fills Remaining Space with Independent Scroll */}
+          <div className="flex-1 overflow-hidden">
+            <ChatInterface
+              agentId={mappedAgent.id}
+              agentName={mappedAgent.name}
+              priceUsdc={mappedAgent.priceUsdc}
+              isFree={mappedAgent.isFree}
+            />
           </div>
         </div>
-
-        {/* Right Column: Chat - Separate Scrolling */}
-        <div className="lg:col-span-7 lg:min-h-[calc(100vh-8rem)]">
-          <ChatInterface
-            agentId={mappedAgent.id}
-            agentName={mappedAgent.name}
-            priceUsdc={mappedAgent.priceUsdc}
-            isFree={mappedAgent.isFree}
-          />
-        </div>
       </div>
-    </div>
+    </>
   );
 }
