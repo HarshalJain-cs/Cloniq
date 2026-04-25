@@ -33,10 +33,11 @@ export default async function AgentPage({ params }: { params: Promise<{ id: stri
 
   return (
     <div className="h-screen flex flex-col pt-20 overflow-hidden bg-gray-50/30">
-      <div className="flex-1 flex gap-0 overflow-hidden">
+      <div className="flex-1 min-h-0 flex gap-0 overflow-hidden">
         {/* Left Side: Agent Details - Fixed Width with Independent Scroll */}
         <div
-          className="w-full lg:w-[380px] xl:w-[420px] border-r border-black/10 bg-white overflow-y-auto overflow-x-hidden"
+          data-lenis-prevent=""
+          className="w-full lg:w-[380px] xl:w-[420px] min-h-0 border-r border-black/10 bg-white overflow-y-auto overflow-x-hidden overscroll-contain"
           style={{
             scrollbarWidth: 'thin',
             scrollbarColor: 'rgba(0,0,0,0.1) transparent'
@@ -48,7 +49,7 @@ export default async function AgentPage({ params }: { params: Promise<{ id: stri
         </div>
 
         {/* Right Side: Full Chat Interface - Fills Remaining Space with Independent Scroll */}
-        <div className="flex-1 overflow-hidden">
+        <div className="flex-1 min-w-0 min-h-0 overflow-hidden">
           <ChatInterface
             agentId={mappedAgent.id}
             agentName={mappedAgent.name}

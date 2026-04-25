@@ -43,7 +43,7 @@ export default function ChatInterface({
   const [depositAmount, setDepositAmount] = useState(10);
   const [isExecutingTrade, setIsExecutingTrade] = useState(false);
   const [tradeResult, setTradeResult] = useState<any>(null);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   const account = useActiveAccount();
 
   const handleDeposit = async () => {
@@ -114,7 +114,15 @@ export default function ChatInterface({
 
   // Auto-scroll to bottom when messages change
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    const container = messagesContainerRef.current;
+    if (!container) return;
+
+    requestAnimationFrame(() => {
+      container.scrollTo({
+        top: container.scrollHeight,
+        behavior: "smooth",
+      });
+    });
   }, [messages]);
 
   // useFetchWithPayment auto-intercepts 402 responses, shows the thirdweb
@@ -213,7 +221,7 @@ export default function ChatInterface({
   };
 
   return (
-    <Card className="h-full flex flex-col glass border-0 border-l border-black/5 shadow-none rounded-none bg-gradient-to-br from-white to-gray-50/50">
+    <Card className="h-full min-h-0 flex flex-col glass border-0 border-l border-black/5 shadow-none rounded-none bg-gradient-to-br from-white to-gray-50/50">
       {/* Chat Header - Bing-like */}
       <div className="px-8 py-6 border-b border-black/5 bg-gradient-to-r from-primary/5 to-primary/10 backdrop-blur-sm">
         <div className="flex items-center justify-between">
@@ -245,7 +253,9 @@ export default function ChatInterface({
 
       {/* Messages - Bing-like Design */}
       <div
-        className="flex-1 overflow-y-auto overflow-x-hidden overscroll-contain p-8 flex flex-col gap-8 scroll-smooth bg-gradient-to-b from-transparent to-gray-50/30"
+        ref={messagesContainerRef}
+        data-lenis-prevent=""
+        className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain p-8 flex flex-col gap-8 scroll-smooth bg-gradient-to-b from-transparent to-gray-50/30"
         style={{
           scrollbarWidth: 'thin',
           scrollbarColor: 'rgba(0,0,0,0.1) transparent'
@@ -301,7 +311,6 @@ export default function ChatInterface({
             </motion.div>
           )}
         </AnimatePresence>
-        <div ref={messagesEndRef} />
       </div>
 
       {/* Input Area - Bing-like */}
