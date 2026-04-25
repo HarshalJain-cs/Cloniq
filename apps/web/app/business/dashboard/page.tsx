@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Building2, Users, Bot, TrendingUp, Plus } from "lucide-react";
@@ -9,22 +8,20 @@ import Link from "next/link";
 import AdvitLabsServices from "@/components/business/AdvitLabsServices";
 
 export default function BusinessDashboard() {
-  const params = useParams();
-  const slug = params.slug as string;
   const [business, setBusiness] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // TODO: Fetch business data
+    // TODO: Fetch business data from auth context or API
     // For now, mock data
     setBusiness({
-      business_name: slug.replace(/-/g, " ").replace(/\b\w/g, l => l.toUpperCase()),
+      business_name: "Advit Enterprise",
       total_agents_created: 5,
       total_queries_this_month: 1247,
       subscription_tier: "free",
     });
     setLoading(false);
-  }, [slug]);
+  }, []);
 
   if (loading) return <div className="min-h-screen pt-32 px-6 flex items-center justify-center">Loading...</div>;
 

@@ -117,13 +117,11 @@ export default function AdvitLabsServices() {
         <div className="absolute inset-0 bg-architect-grid opacity-[0.4] pointer-events-none"></div>
         <div className="relative z-10">
           <div className="flex items-center gap-6 mb-8">
-            <div className="flex items-center justify-center w-16 h-16 bg-black border border-black rounded-none">
-              <img
-                src="/advit-labs-logo.png"
-                alt="ADVIT AI Labs"
-                className="w-12 h-12 object-contain"
-              />
-            </div>
+            <img
+              src="/advit-labs-logo.png"
+              alt="ADVIT AI Labs"
+              className="h-20 object-contain mix-blend-multiply"
+            />
             <div>
               <div className="flex items-center gap-4 mb-2">
                 <h2 className="font-logo font-black text-4xl text-black tracking-tight">
