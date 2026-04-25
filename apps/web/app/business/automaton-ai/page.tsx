@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Card, CardContent } from "@/components/ui/Card";
-import { Phone, Calendar, Zap, Shield, Radio } from "lucide-react";
+import { Phone, Calendar, Zap, Shield, Radio, Globe, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import Script from "next/script";
 
@@ -41,24 +41,30 @@ export default function AutomatonAIDemo() {
 
           {/* Title */}
           <div className="mb-6">
-            <Link href="/business/automaton-ai/website" className="hover:opacity-80 transition-opacity">
-              <h1 className="font-outfit font-black text-5xl mb-4 hover:text-accent transition-colors cursor-pointer">
-                ADVIT<span className="text-xs align-super">™</span> AI Labs
-              </h1>
-            </Link>
+            <h1 className="font-outfit font-black text-5xl mb-4">
+              ADVIT<span className="text-xs align-super">™</span> AI Labs
+            </h1>
             <p className="text-foreground/60 text-xl mb-4">
               Voice AI Service for AutomatonAI
             </p>
-            <div className="flex items-center justify-center gap-3 flex-wrap">
-              <Badge className="bg-accent/10 text-accent border-accent/20">
-                <Radio className="w-3 h-3 mr-1 animate-pulse" />
-                Live Demo Available
-              </Badge>
-              <Link href="/business/automaton-ai/website">
-                <Badge className="bg-primary/10 text-primary border-primary/20 hover:bg-primary hover:text-white transition-all cursor-pointer">
-                  Visit Website →
-                </Badge>
-              </Link>
+            <Badge className="bg-accent/10 text-accent border-accent/20 mb-6">
+              <Radio className="w-3 h-3 mr-1 animate-pulse" />
+              Live Demo Available
+            </Badge>
+
+            {/* Demo Website Button */}
+            <div className="mt-6">
+              <Button
+                size="lg"
+                className="bg-accent text-white hover:bg-accent/90 font-bold px-10"
+                asChild
+              >
+                <Link href="/business/automaton-ai/website">
+                  <Globe className="w-5 h-5 mr-2" />
+                  View Demo Website
+                  <ExternalLink className="w-4 h-4 ml-2" />
+                </Link>
+              </Button>
             </div>
           </div>
 
