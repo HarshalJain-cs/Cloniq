@@ -297,7 +297,7 @@ export default function ConversationalAIStudio() {
 
                     <div className="rounded-[2rem] border border-black/5 bg-white/60 backdrop-blur-xl p-4 shadow-xl shadow-black/5">
                       <div className="flex min-h-[240px] items-center justify-center overflow-hidden rounded-[1.4rem] bg-white px-4 py-6 border border-black/5">
-                        <div className="w-full flex justify-center transform transition-transform hover:scale-105">
+                        <div className="w-full flex justify-center">
                           <ElevenLabsConvai
                             agentId={VOICE_AGENT_ID}
                             serverLocation="us"
