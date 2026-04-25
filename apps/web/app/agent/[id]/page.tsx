@@ -1,6 +1,6 @@
 import { createServiceRoleClient } from "@/lib/supabase";
 import AgentProfileDetails from "@/components/agent/AgentProfileDetails";
-import ChatInterface from "@/components/agent/ChatInterface";
+import ElevenLabsWidget from "@/components/agent/ElevenLabsWidget";
 import { notFound } from "next/navigation";
 
 export default async function AgentPage({ params }: { params: Promise<{ id: string }> }) {
@@ -48,13 +48,11 @@ export default async function AgentPage({ params }: { params: Promise<{ id: stri
           </div>
         </div>
 
-        {/* Right Side: Full Chat Interface - Fills Remaining Space with Independent Scroll */}
-        <div className="flex-1 min-w-0 min-h-0 overflow-hidden">
-          <ChatInterface
+        {/* Right Side: ElevenLabs Voice Widget - Fills Remaining Space */}
+        <div className="flex-1 min-w-0 min-h-0 overflow-y-auto bg-white">
+          <ElevenLabsWidget
             agentId={mappedAgent.id}
             agentName={mappedAgent.name}
-            priceUsdc={mappedAgent.priceUsdc}
-            isFree={mappedAgent.isFree}
           />
         </div>
       </div>
