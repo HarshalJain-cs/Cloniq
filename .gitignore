@@ -61,3 +61,7 @@ docs/
 
 *.sql
 *.ps1
+
+# Consolidated private assets
+cloniq-private/
+
