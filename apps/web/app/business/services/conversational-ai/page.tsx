@@ -209,6 +209,7 @@ const conversation = await Conversation.startSession({
   },
 ];
 
+
 export default function ConversationalAIStudio() {
   const [selectedVoice, setSelectedVoice] = useState(sampleVoices[0]);
   const [selectedIntegration, setSelectedIntegration] = useState(integrationMethods[0]);
@@ -235,11 +236,11 @@ export default function ConversationalAIStudio() {
           <div className="flex items-center gap-4 mb-4">
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-r from-[#3F51B5] to-[#1A237E] rounded-2xl blur-xl opacity-60 animate-pulse"></div>
-              <div className="relative bg-[#3F51B5]/20 backdrop-blur-xl border border-[#3F51B5]/30 rounded-2xl p-4">
+              <div className="relative bg-[#3F51B5]/20 backdrop-blur-xl border border-[#3F51B5]/30 rounded-2xl overflow-hidden">
                 <img
                   src="/advit-labs-logo.png"
                   alt="ADVIT AI Labs"
-                  className="w-12 h-12 object-contain"
+                  className="w-20 h-20 object-cover"
                 />
               </div>
             </div>
