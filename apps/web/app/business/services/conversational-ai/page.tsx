@@ -295,18 +295,25 @@ export default function ConversationalAIStudio() {
                       </div>
                     </div>
 
-                    <div className="rounded-3xl border border-black/10 bg-white/80 p-5 shadow-2xl shadow-black/10 backdrop-blur-xl">
-                      <ElevenLabsConvai
-                        agentId={VOICE_AGENT_ID}
-                        serverLocation="us"
-                        avatarOrbColor1="#111827"
-                        avatarOrbColor2="#f43f5e"
-                        actionText="Talk to ADVIT AI"
-                        startCallText="Start voice conversation"
-                        endCallText="End conversation"
-                        listeningText="Listening..."
-                        speakingText="Agent speaking"
-                      />
+                    <div className="rounded-[2rem] border border-black/10 bg-[linear-gradient(145deg,#111111,#2a2a2a)] p-4 shadow-2xl shadow-black/20">
+                      <div className="rounded-[1.65rem] border border-white/10 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.14),transparent_55%),linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.02))] p-5">
+                        <div className="flex min-h-[240px] items-center justify-center overflow-visible rounded-[1.4rem] bg-white px-6 py-8 shadow-[0_18px_60px_rgba(0,0,0,0.35)]">
+                          <div className="w-full scale-[1.14] transform overflow-visible md:scale-[1.2]">
+                            <ElevenLabsConvai
+                              agentId={VOICE_AGENT_ID}
+                              serverLocation="us"
+                              avatarOrbColor1="#111827"
+                              avatarOrbColor2="#f43f5e"
+                              actionText="Talk to ADVIT AI"
+                              startCallText="Start voice conversation"
+                              endCallText="End conversation"
+                              listeningText="Listening..."
+                              speakingText="Agent speaking"
+                              style={{ display: "block", width: "100%" }}
+                            />
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
