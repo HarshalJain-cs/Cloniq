@@ -114,6 +114,27 @@ export default function BusinessSlugDashboard() {
           </Card>
         </div>
 
+        {/* Demo Website Link */}
+        {slug === "stoaa" && (
+          <Card className="glass shadow-premium border-accent/20 mb-8">
+            <CardContent className="p-8 flex items-center justify-between">
+              <div>
+                <h2 className="font-bold text-2xl mb-1">Demo Website</h2>
+                <p className="text-foreground/60 text-sm">
+                  View your live Automaton AI demo website with conversational voice bot
+                </p>
+              </div>
+              <Link href="/business/automaton-ai/website">
+                <Button className="bg-accent text-white hover:bg-accent/90 font-bold px-8">
+                  <Globe className="w-5 h-5 mr-2" />
+                  View Demo Website
+                  <ExternalLink className="w-4 h-4 ml-2" />
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
           <Card className="glass shadow-premium border-black/5">

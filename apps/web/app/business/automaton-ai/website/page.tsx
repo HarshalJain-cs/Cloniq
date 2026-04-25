@@ -180,11 +180,9 @@ export default function AutomatonAIWebsite() {
 
   return (
     <div className="min-h-screen bg-background font-outfit">
-      {/* ── ElevenLabs Voice Bot ── */}
+      {/* ── ElevenLabs Conversational AI Bot (Bottom Right) ── */}
       <div className="fixed bottom-6 right-6 z-50">
-        <elevenlabs-convai
-          agent-id={process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID}
-        />
+        <elevenlabs-convai agent-id="agent_1401kq1hf3nxehqv6f156s06ve83" />
       </div>
 
       {/* ══════════════════════════════════════════════════════════
