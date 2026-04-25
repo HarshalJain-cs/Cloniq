@@ -121,7 +121,7 @@ export default function AdvitLabsServices() {
               <img
                 src="/advit-labs-logo.png"
                 alt="ADVIT AI Labs"
-                className="w-8 h-8 object-contain filter invert"
+                className="w-12 h-12 object-contain"
               />
             </div>
             <div>
