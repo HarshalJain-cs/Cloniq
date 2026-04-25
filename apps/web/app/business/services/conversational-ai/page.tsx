@@ -272,7 +272,7 @@ export default function ConversationalAIStudio() {
 
                 <div className="relative mb-8 overflow-hidden rounded-3xl border border-black/10 bg-[radial-gradient(circle_at_30%_20%,rgba(244,63,94,0.14),transparent_32%),radial-gradient(circle_at_70%_30%,rgba(99,102,241,0.14),transparent_34%),linear-gradient(135deg,#ffffff,#f8fafc)] p-6 md:p-8">
                   <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-black/20 to-transparent" />
-                  <div className="grid gap-8 lg:grid-cols-[1fr_340px] lg:items-center">
+                  <div className="grid gap-8 lg:grid-cols-[1fr_450px] lg:items-center">
                     <div>
                       <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-black/10 bg-white/70 px-4 py-2 text-xs font-bold uppercase tracking-widest text-black/50">
                         <Sparkles className="h-3.5 w-3.5 text-rose-500" />
@@ -296,7 +296,7 @@ export default function ConversationalAIStudio() {
                     </div>
 
                     <div className="rounded-[2rem] border border-black/5 bg-white/60 backdrop-blur-xl p-4 shadow-xl shadow-black/5">
-                      <div className="flex min-h-[240px] items-center justify-center overflow-hidden rounded-[1.4rem] bg-white px-4 py-6 border border-black/5">
+                      <div className="flex min-h-[400px] items-center justify-center overflow-hidden rounded-[1.4rem] bg-white px-4 py-6 border border-black/5">
                         <div className="w-full flex justify-center">
                           <ElevenLabsConvai
                             agentId={VOICE_AGENT_ID}
@@ -308,7 +308,7 @@ export default function ConversationalAIStudio() {
                             endCallText="End conversation"
                             listeningText="Listening..."
                             speakingText="Agent speaking"
-                            style={{ display: "flex", justifyContent: "center", width: "100%", maxWidth: "280px" }}
+                            style={{ display: "flex", justifyContent: "center", width: "100%", maxWidth: "400px" }}
                           />
                         </div>
                       </div>
@@ -348,7 +348,7 @@ export default function ConversationalAIStudio() {
                   </Badge>
                 </div>
 
-                <div className="min-h-[520px] overflow-hidden rounded-3xl border border-black/10 bg-white p-4 shadow-inner">
+                <div className="min-h-[700px] overflow-hidden rounded-3xl border border-black/10 bg-white p-4 shadow-inner">
                   <ElevenLabsConvai
                     agentId={VOICE_AGENT_ID}
                     serverLocation="us"
