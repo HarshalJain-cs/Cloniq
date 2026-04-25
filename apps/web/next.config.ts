@@ -11,15 +11,20 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
-        source: "/(.*)",
+        source: "/business/:path*/website",
         headers: [
           {
             key: "Cross-Origin-Opener-Policy",
-            value: "same-origin-allow-popups",
+            value: "unsafe-none",
           },
+        ],
+      },
+      {
+        source: "/agent/:path*",
+        headers: [
           {
-            key: "Cross-Origin-Embedder-Policy",
-            value: "credentialless",
+            key: "Cross-Origin-Opener-Policy",
+            value: "unsafe-none",
           },
         ],
       },
