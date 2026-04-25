@@ -1,34 +1,77 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { createElement, useState, type HTMLAttributes } from "react";
+import Script from "next/script";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import {
-  Mic,
-  MicOff,
-  Phone,
-  PhoneOff,
   Sparkles,
   Settings,
   Radio,
-  Volume2,
-  VolumeX,
   Copy,
   Check,
-  Play,
-  Pause,
   ArrowLeft,
   ExternalLink,
   Code,
-  Smartphone,
   Globe,
 } from "lucide-react";
 import Link from "next/link";
 
-// Voice AI Agent Configuration
+// ElevenLabs Conversational AI Agent Configuration
 const VOICE_AGENT_ID = "agent_8701kq0tt9n2e3ws82wj83y3smfg";
 const VOICE_AGENT_NAME = "Outbound Sales Representative";
+const ELEVENLABS_WIDGET_SRC = "https://unpkg.com/@elevenlabs/convai-widget-embed";
+
+type ElevenLabsConvaiProps = HTMLAttributes<HTMLElement> & {
+  agentId: string;
+  serverLocation?: string;
+  variant?: string;
+  dismissible?: string;
+  avatarOrbColor1?: string;
+  avatarOrbColor2?: string;
+  actionText?: string;
+  startCallText?: string;
+  endCallText?: string;
+  expandText?: string;
+  listeningText?: string;
+  speakingText?: string;
+  overrideFirstMessage?: string;
+};
+
+function ElevenLabsConvai({
+  agentId,
+  serverLocation,
+  variant,
+  dismissible,
+  avatarOrbColor1,
+  avatarOrbColor2,
+  actionText,
+  startCallText,
+  endCallText,
+  expandText,
+  listeningText,
+  speakingText,
+  overrideFirstMessage,
+  ...props
+}: ElevenLabsConvaiProps) {
+  return createElement("elevenlabs-convai", {
+    ...props,
+    "agent-id": agentId,
+    "server-location": serverLocation,
+    variant,
+    dismissible,
+    "avatar-orb-color-1": avatarOrbColor1,
+    "avatar-orb-color-2": avatarOrbColor2,
+    "action-text": actionText,
+    "start-call-text": startCallText,
+    "end-call-text": endCallText,
+    "expand-text": expandText,
+    "listening-text": listeningText,
+    "speaking-text": speakingText,
+    "override-first-message": overrideFirstMessage,
+  });
+}
 
 const sampleVoices = [
   { id: "21m00Tcm4TlvDq8ikWAM", name: "Rachel - Calm & Professional" },
@@ -41,161 +84,135 @@ const sampleVoices = [
 
 const integrationMethods = [
   {
-    id: "react",
-    name: "React SDK",
-    icon: Code,
-    description: "Full-featured React component with WebRTC streaming",
-    code: `import { useConversation } from "@advit/voice-ai";
-
-function Agent() {
-  const conversation = useConversation({
-    onConnect: () => console.log("Connected"),
-    onDisconnect: () => console.log("Disconnected"),
-    onMessage: (message) => console.log("Message:", message),
-    onError: (error) => console.error("Error:", error),
-  });
-
-  const startConversation = async () => {
-    await navigator.mediaDevices.getUserMedia({ audio: true });
-    await conversation.startSession({
-      agentId: "${VOICE_AGENT_ID}",
-      connectionType: "webrtc", // or "websocket"
-    });
-  };
-
-  return (
-    <div>
-      <button onClick={startConversation}>Start</button>
-      <button onClick={() => conversation.endSession()}>Stop</button>
-      <p>Status: {conversation.status}</p>
-      <p>Agent is {conversation.isSpeaking ? "speaking" : "listening"}</p>
-    </div>
-  );
-}`,
-  },
-  {
-    id: "react-native",
-    name: "React Native",
-    icon: Smartphone,
-    description: "Native mobile integration for iOS & Android",
-    code: `import { VoiceAIProvider, useConversation } from "@advit/voice-ai-native";
-
-function App() {
-  return (
-    <VoiceAIProvider>
-      <ConversationScreen />
-    </VoiceAIProvider>
-  );
-}
-
-function ConversationScreen() {
-  const conversation = useConversation({
-    onConnect: () => console.log("Connected"),
-    onDisconnect: () => console.log("Disconnected"),
-    onMessage: (message) => console.log("Message:", message),
-  });
-
-  const start = async () => {
-    await conversation.startSession({
-      agentId: "${VOICE_AGENT_ID}"
-    });
-  };
-
-  return (
-    <View>
-      <Button title={conversation.status === "connected" ? "Stop" : "Start"}
-        onPress={conversation.status === "connected" ?
-          () => conversation.endSession() : start}
-      />
-      <Text>Agent is {conversation.isSpeaking ? "speaking" : "listening"}</Text>
-    </View>
-  );
-}`,
-  },
-  {
     id: "widget",
-    name: "Embeddable Widget",
+    name: "Orb Widget",
     icon: Globe,
-    description: "Drop-in widget for any website",
-    code: `<advit-voice-ai agent-id="${VOICE_AGENT_ID}"></advit-voice-ai>
+    description: "Official ElevenLabs orb widget for voice-first conversations",
+    code: `<elevenlabs-convai agent-id="${VOICE_AGENT_ID}"></elevenlabs-convai>
 
 <script
-  src="https://cdn.advitlabs.ai/voice-widget/v1/index.js"
+  src="https://unpkg.com/@elevenlabs/convai-widget-embed"
   async
   type="text/javascript">
 </script>`,
   },
   {
-    id: "python",
-    name: "Python SDK",
-    icon: Code,
-    description: "Server-side Python integration",
-    code: `import os
-from advit.voice_ai import VoiceAIClient, Conversation, AudioInterface
+    id: "expanded-widget",
+    name: "Text Embed",
+    icon: Globe,
+    description: "Expanded ElevenLabs widget. Enable Voice + text or Chat Mode in the ElevenLabs Widget tab.",
+    code: `<elevenlabs-convai
+  agent-id="${VOICE_AGENT_ID}"
+  variant="expanded"
+  dismissible="false"
+  action-text="Chat with our AI sales agent"
+  start-call-text="Start voice call"
+  expand-text="Open text chat">
+</elevenlabs-convai>
 
-client = VoiceAIClient(api_key=os.getenv("ADVIT_API_KEY"))
-
-conversation = Conversation(
-    client,
-    agent_id="${VOICE_AGENT_ID}",
-    requires_auth=False,
-    audio_interface=AudioInterface(),
-    callback_agent_response=lambda response: print(f"Agent: {response}"),
-    callback_user_transcript=lambda transcript: print(f"User: {transcript}"),
-)
-
-conversation.start_session()
-conversation_id = conversation.wait_for_session_end()
-print(f"Conversation ID: {conversation_id}")`,
+<script
+  src="https://unpkg.com/@elevenlabs/convai-widget-embed"
+  async
+  type="text/javascript">
+</script>`,
   },
   {
-    id: "websocket",
-    name: "WebSocket",
+    id: "react",
+    name: "React Voice",
     icon: Code,
-    description: "Direct WebSocket connection for custom implementations",
-    code: `const ws = new WebSocket(
-  "wss://api.advitlabs.ai/v1/voice/conversation?agent_id=${VOICE_AGENT_ID}"
-);
+    description: "Official ElevenLabs React SDK for a custom voice UI",
+    code: `import { ConversationProvider, useConversationControls, useConversationStatus } from "@elevenlabs/react";
 
-ws.onopen = () => {
-  ws.send(JSON.stringify({
-    type: "conversation_initiation_client_data",
-  }));
-};
+export default function App() {
+  return (
+    <ConversationProvider>
+      <Agent />
+    </ConversationProvider>
+  );
+}
 
-ws.onmessage = (event) => {
-  const data = JSON.parse(event.data);
+function Agent() {
+  const { startSession, endSession } = useConversationControls();
+  const { status, isSpeaking } = useConversationStatus();
 
-  switch (data.type) {
-    case "user_transcript":
-      console.log("User:", data.user_transcription_event.user_transcript);
-      break;
-    case "agent_response":
-      console.log("Agent:", data.agent_response_event.agent_response);
-      break;
-    case "audio":
-      // data.audio_event.audio_base_64 contains the audio chunk
-      break;
-    case "ping":
-      setTimeout(() => {
-        ws.send(JSON.stringify({
-          type: "pong",
-          event_id: data.ping_event.event_id,
-        }));
-      }, data.ping_event.ping_ms);
-      break;
-  }
-};`,
+  const start = async () => {
+    await navigator.mediaDevices.getUserMedia({ audio: true });
+    await startSession({ agentId: "${VOICE_AGENT_ID}" });
+  };
+
+  return (
+    <>
+      <button onClick={status === "connected" ? endSession : start}>
+        {status === "connected" ? "End" : "Start"}
+      </button>
+      <p>{isSpeaking ? "Agent speaking" : "Agent listening"}</p>
+    </>
+  );
+}`,
+  },
+  {
+    id: "text-sdk",
+    name: "Text SDK",
+    icon: Code,
+    description: "Official ElevenLabs React SDK in text-only mode",
+    code: `import { useConversation } from "@elevenlabs/react";
+import { useState } from "react";
+
+function TextAgent() {
+  const [value, setValue] = useState("");
+  const conversation = useConversation({
+    textOnly: true,
+    overrides: {
+      conversation: { textOnly: true },
+    },
+  });
+
+  const start = () => conversation.startSession({
+    agentId: "${VOICE_AGENT_ID}",
+  });
+
+  const send = () => {
+    conversation.sendUserMessage(value);
+    setValue("");
+  };
+
+  return (
+    <>
+      <button onClick={start}>Start chat</button>
+      <input
+        value={value}
+        onChange={(event) => {
+          setValue(event.target.value);
+          conversation.sendUserActivity();
+        }}
+      />
+      <button onClick={send}>Send</button>
+    </>
+  );
+}`,
+  },
+  {
+    id: "javascript",
+    name: "JavaScript",
+    icon: Code,
+    description: "Official ElevenLabs JavaScript client package",
+    code: `import { Conversation } from "@elevenlabs/client";
+
+const conversation = await Conversation.startSession({
+  agentId: "${VOICE_AGENT_ID}",
+  connectionType: "webrtc",
+  onConnect: () => console.log("Connected"),
+  onDisconnect: () => console.log("Disconnected"),
+  onMessage: (message) => console.log(message),
+  onError: (error) => console.error(error),
+});`,
   },
 ];
 
 export default function ConversationalAIStudio() {
-  const [isConnected, setIsConnected] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
   const [selectedVoice, setSelectedVoice] = useState(sampleVoices[0]);
   const [selectedIntegration, setSelectedIntegration] = useState(integrationMethods[0]);
   const [copiedCode, setCopiedCode] = useState(false);
-  const [conversationActive, setConversationActive] = useState(false);
 
   const handleCopyCode = () => {
     navigator.clipboard.writeText(selectedIntegration.code);
@@ -203,13 +220,9 @@ export default function ConversationalAIStudio() {
     setTimeout(() => setCopiedCode(false), 2000);
   };
 
-  const toggleConnection = () => {
-    setIsConnected(!isConnected);
-    setConversationActive(!isConnected);
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 pt-32 pb-20 px-6">
+      <Script src={ELEVENLABS_WIDGET_SRC} strategy="afterInteractive" />
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -250,79 +263,52 @@ export default function ConversationalAIStudio() {
             <Card className="glass shadow-premium border-black/5">
               <CardContent className="p-8">
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="font-bold text-2xl">Live Conversation Tester</h2>
-                  <Badge variant={conversationActive ? "default" : "outline"}>
-                    {conversationActive ? "Active" : "Inactive"}
+                  <h2 className="font-bold text-2xl">Live ElevenLabs Agent</h2>
+                  <Badge className="bg-green-500/10 text-green-500 border-green-500/20">
+                    <Radio className="w-3 h-3 mr-1 animate-pulse" />
+                    Embedded
                   </Badge>
                 </div>
 
-                {/* Voice Visualizer */}
-                <div className="relative mb-8">
-                  <div className="aspect-video bg-gradient-to-br from-purple-500/10 via-pink-500/10 to-rose-500/10 rounded-2xl border border-white/10 flex items-center justify-center overflow-hidden">
-                    {conversationActive ? (
-                      <div className="flex items-center gap-3">
-                        {[...Array(20)].map((_, i) => (
-                          <div
-                            key={i}
-                            className="w-1 bg-gradient-to-t from-purple-500 to-pink-500 rounded-full animate-pulse"
-                            style={{
-                              height: `${Math.random() * 100 + 20}px`,
-                              animationDelay: `${i * 0.1}s`,
-                            }}
-                          ></div>
+                <div className="relative mb-8 overflow-hidden rounded-3xl border border-black/10 bg-[radial-gradient(circle_at_30%_20%,rgba(244,63,94,0.14),transparent_32%),radial-gradient(circle_at_70%_30%,rgba(99,102,241,0.14),transparent_34%),linear-gradient(135deg,#ffffff,#f8fafc)] p-6 md:p-8">
+                  <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-black/20 to-transparent" />
+                  <div className="grid gap-8 lg:grid-cols-[1fr_340px] lg:items-center">
+                    <div>
+                      <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-black/10 bg-white/70 px-4 py-2 text-xs font-bold uppercase tracking-widest text-black/50">
+                        <Sparkles className="h-3.5 w-3.5 text-rose-500" />
+                        ElevenLabs ConvAI
+                      </div>
+                      <h3 className="mb-4 text-3xl font-black tracking-tight md:text-5xl">
+                        Talk to the live sales agent.
+                      </h3>
+                      <p className="max-w-2xl text-sm leading-relaxed text-foreground/60 md:text-base">
+                        This is the official ElevenLabs conversational AI widget connected to the
+                        agent ID below. The orb handles microphone permission, WebRTC audio,
+                        interruptions, and the conversation lifecycle.
+                      </p>
+                      <div className="mt-6 flex flex-wrap gap-2">
+                        {["Voice orb", "Public agent", "WebRTC", "Widget embed"].map((item) => (
+                          <Badge key={item} variant="outline" className="bg-white/60">
+                            {item}
+                          </Badge>
                         ))}
                       </div>
-                    ) : (
-                      <div className="text-center">
-                        <Mic className="w-16 h-16 mx-auto mb-4 text-foreground/20" />
-                        <p className="text-foreground/40">Click "Start Conversation" to begin</p>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Status Indicator */}
-                  {conversationActive && (
-                    <div className="absolute top-4 right-4 flex items-center gap-2 bg-black/50 backdrop-blur-xl border border-white/20 rounded-full px-4 py-2">
-                      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                      <span className="text-white text-sm font-medium">
-                        {isConnected ? "Connected" : "Connecting..."}
-                      </span>
                     </div>
-                  )}
-                </div>
 
-                {/* Controls */}
-                <div className="flex items-center justify-center gap-4">
-                  <Button
-                    onClick={toggleConnection}
-                    size="lg"
-                    className={`${
-                      conversationActive
-                        ? "bg-gradient-to-r from-red-500 to-rose-500"
-                        : "bg-gradient-to-r from-purple-500 via-pink-500 to-rose-500"
-                    } hover:opacity-90 transition-opacity border-0 text-white font-bold px-8`}
-                  >
-                    {conversationActive ? (
-                      <>
-                        <PhoneOff className="w-5 h-5 mr-2" />
-                        End Conversation
-                      </>
-                    ) : (
-                      <>
-                        <Phone className="w-5 h-5 mr-2" />
-                        Start Conversation
-                      </>
-                    )}
-                  </Button>
-
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    onClick={() => setIsMuted(!isMuted)}
-                    disabled={!conversationActive}
-                  >
-                    {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
-                  </Button>
+                    <div className="rounded-3xl border border-black/10 bg-white/80 p-5 shadow-2xl shadow-black/10 backdrop-blur-xl">
+                      <ElevenLabsConvai
+                        agentId={VOICE_AGENT_ID}
+                        serverLocation="us"
+                        avatarOrbColor1="#111827"
+                        avatarOrbColor2="#f43f5e"
+                        actionText="Talk to ADVIT AI"
+                        startCallText="Start voice conversation"
+                        endCallText="End conversation"
+                        listeningText="Listening..."
+                        speakingText="Agent speaking"
+                      />
+                    </div>
+                  </div>
                 </div>
 
                 {/* Info */}
@@ -330,13 +316,44 @@ export default function ConversationalAIStudio() {
                   <div className="flex items-start gap-3">
                     <Sparkles className="w-5 h-5 text-blue-500 mt-0.5" />
                     <div className="text-sm">
-                      <p className="font-medium text-blue-400 mb-1">Pro Tip</p>
+                      <p className="font-medium text-blue-400 mb-1">Setup note</p>
                       <p className="text-foreground/70">
-                        This is a live connection to ADVIT's conversational AI platform. The agent will respond
-                        with ultra-realistic voice and can handle interruptions naturally.
+                        ElevenLabs widgets require the agent to be public with authentication disabled.
+                        For production, add your Vercel domain to the ElevenLabs allowlist.
                       </p>
                     </div>
                   </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Text-Based Embed */}
+            <Card className="glass shadow-premium border-black/5">
+              <CardContent className="p-8">
+                <div className="mb-6 flex items-center justify-between gap-4">
+                  <div>
+                    <h2 className="font-bold text-2xl">Text-Based ElevenLabs Embed</h2>
+                    <p className="mt-2 text-sm text-foreground/60">
+                      Expanded widget for chat-first usage. Turn on Voice + text or Chat Mode in the
+                      ElevenLabs Widget settings for this agent.
+                    </p>
+                  </div>
+                  <Badge variant="outline" className="bg-white/60">
+                    Chat mode
+                  </Badge>
+                </div>
+
+                <div className="min-h-[520px] overflow-hidden rounded-3xl border border-black/10 bg-white p-4 shadow-inner">
+                  <ElevenLabsConvai
+                    agentId={VOICE_AGENT_ID}
+                    serverLocation="us"
+                    variant="expanded"
+                    dismissible="false"
+                    actionText="Chat with our AI sales agent"
+                    startCallText="Start voice call"
+                    expandText="Open text chat"
+                    overrideFirstMessage="Hi, I am ADVIT AI's sales assistant. How can I help you today?"
+                  />
                 </div>
               </CardContent>
             </Card>
@@ -488,7 +505,7 @@ export default function ConversationalAIStudio() {
                   variant="outline"
                   className="w-full mt-4"
                   onClick={() =>
-                    window.open("https://docs.advitlabs.ai/voice-ai", "_blank")
+                    window.open("https://elevenlabs.io/docs/eleven-agents/customization/widget", "_blank")
                   }
                 >
                   <ExternalLink className="w-4 h-4 mr-2" />
