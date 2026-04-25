@@ -41,16 +41,25 @@ export default function AutomatonAIDemo() {
 
           {/* Title */}
           <div className="mb-6">
-            <h1 className="font-outfit font-black text-5xl mb-4">
-              ADVIT<span className="text-xs align-super">™</span> AI Labs
-            </h1>
+            <Link href="/business/automaton-ai/website" className="hover:opacity-80 transition-opacity">
+              <h1 className="font-outfit font-black text-5xl mb-4 hover:text-accent transition-colors cursor-pointer">
+                ADVIT<span className="text-xs align-super">™</span> AI Labs
+              </h1>
+            </Link>
             <p className="text-foreground/60 text-xl mb-4">
               Voice AI Service for AutomatonAI
             </p>
-            <Badge className="bg-accent/10 text-accent border-accent/20">
-              <Radio className="w-3 h-3 mr-1 animate-pulse" />
-              Live Demo Available
-            </Badge>
+            <div className="flex items-center justify-center gap-3 flex-wrap">
+              <Badge className="bg-accent/10 text-accent border-accent/20">
+                <Radio className="w-3 h-3 mr-1 animate-pulse" />
+                Live Demo Available
+              </Badge>
+              <Link href="/business/automaton-ai/website">
+                <Badge className="bg-primary/10 text-primary border-primary/20 hover:bg-primary hover:text-white transition-all cursor-pointer">
+                  Visit Website →
+                </Badge>
+              </Link>
+            </div>
           </div>
 
           {/* Description */}
