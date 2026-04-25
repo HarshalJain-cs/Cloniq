@@ -244,22 +244,13 @@ export default function ChatInterface({
       </div>
 
       {/* Messages - Bing-like Design */}
-      <div className="flex-1 overflow-y-auto overflow-x-hidden overscroll-contain p-8 flex flex-col gap-8 scroll-smooth bg-gradient-to-b from-transparent to-gray-50/30 custom-scrollbar">
-        <style jsx>{`
-          .custom-scrollbar::-webkit-scrollbar {
-            width: 8px;
-          }
-          .custom-scrollbar::-webkit-scrollbar-track {
-            background: transparent;
-          }
-          .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: rgba(0, 0, 0, 0.1);
-            border-radius: 4px;
-          }
-          .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: rgba(0, 0, 0, 0.15);
-          }
-        `}</style>
+      <div
+        className="flex-1 overflow-y-auto overflow-x-hidden overscroll-contain p-8 flex flex-col gap-8 scroll-smooth bg-gradient-to-b from-transparent to-gray-50/30"
+        style={{
+          scrollbarWidth: 'thin',
+          scrollbarColor: 'rgba(0,0,0,0.1) transparent'
+        }}
+      >
         <AnimatePresence initial={false}>
           {messages.map((message) => (
             <motion.div
