@@ -1,8 +1,8 @@
 // Creates a deterministic server wallet for an agent using thirdweb Engine REST API.
 // The same label always returns the same wallet address (idempotent).
 export async function createAgentWallet(agentName: string): Promise<string> {
-  const secretKey = process.env.NEXT_PUBLIC_THIRWEB_SECERT_KEY;
-  if (!secretKey) throw new Error("Missing NEXT_PUBLIC_THIRWEB_SECERT_KEY");
+  const secretKey = process.env.THIRDWEB_SECRET_KEY;
+  if (!secretKey) throw new Error("Missing THIRDWEB_SECRET_KEY");
 
   const response = await fetch("https://api.thirdweb.com/v1/wallets/server", {
     method: "POST",

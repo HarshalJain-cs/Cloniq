@@ -270,7 +270,11 @@ export async function POST(request: NextRequest) {
     if (insertError) {
       console.error("[POST /api/agents] Insert error:", insertError);
       return NextResponse.json(
-        { error: "Failed to create agent" },
+        {
+          error: "Failed to create agent",
+          details: insertError.message,
+          code: insertError.code
+        },
         { status: 500 }
       );
     }
@@ -404,10 +408,14 @@ Create a profile that an AI agent can use to CLONE this person's communication s
       },
       { status: 201 }
     );
-  } catch (err) {
+  } catch (err: any) {
     console.error("[POST /api/agents] Unexpected error:", err);
     return NextResponse.json(
-      { error: "Internal server error" },
+      {
+        error: "Internal server error",
+        details: err?.message || String(err),
+        stack: process.env.NODE_ENV === "development" ? err?.stack : undefined
+      },
       { status: 500 }
     );
   }
