@@ -56,7 +56,6 @@ observer-log/
 ultimate-pitch.md
 docs/
 *.md
-!README.md
 *plan*
 .claude/
 
